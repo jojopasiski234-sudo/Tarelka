@@ -1,0 +1,7 @@
+{
+  "appId": "com.tarelka.app",
+  "appName": "Тарелка",
+  "webDir": "www",
+  "bundledWebRuntime": false,
+  "backgroundColor": "#faf8f4"
+}

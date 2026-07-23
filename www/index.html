@@ -1,0 +1,2611 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#5f8f66">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Тарелка">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>Тарелка — концепт</title>
+<style>
+:root{
+  --bg:#faf8f4;
+  --card:#ffffff;
+  --ink:#2b2b28;
+  --sub:#8a887f;
+  --line:#e9e6df;
+  --acc:#5f8f66;
+  --accd:#4e7a55;
+  --accsoft:#eef3ec;
+  --veg:#6f9a72;
+  --fruit:#c08d64;
+  --grain:#c9ab6b;
+  --prot:#a8766b;
+  --warn:#bd7a6a;
+  --shadow:0 8px 24px rgba(60,70,55,.08);
+}
+.dark{
+  --bg:#161718;
+  --card:#1e2022;
+  --ink:#eae8e3;
+  --sub:#918f88;
+  --line:#2b2d30;
+  --acc:#7cab83;
+  --accd:#6b9672;
+  --accsoft:#222923;
+  --shadow:0 8px 24px rgba(0,0,0,.4);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+html,body{height:100%}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Segoe UI",Roboto,sans-serif;
+  background:#0c0e0d;color:var(--ink);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-height:100dvh;overflow:hidden;
+}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;
+  background:radial-gradient(600px 400px at 15% 8%,rgba(95,143,102,.12),transparent 60%),
+             radial-gradient(700px 500px at 88% 92%,rgba(95,143,102,.07),transparent 60%)}
+.caption{margin-top:26px;font-size:13px;color:rgba(255,255,255,.4);text-align:center}
+.caption b{color:rgba(255,255,255,.75);font-weight:600}
+
+.phone{position:relative;width:393px;height:852px;border-radius:60px;background:#000;
+  box-shadow:0 0 0 11px #17171a,0 0 0 13px #2b2b2f,0 40px 90px rgba(0,0,0,.75)}
+.sidebtn{position:absolute;background:#2b2b2f;border-radius:3px}
+.sb-power{right:-16px;top:210px;width:4px;height:96px}
+.sb-vup{left:-16px;top:180px;width:4px;height:58px}
+.sb-vdn{left:-16px;top:250px;width:4px;height:58px}
+.screen{position:absolute;inset:0;border-radius:60px;overflow:hidden;background:var(--bg);isolation:isolate;
+  transition:background .3s;color:var(--ink)}
+
+.statusbar{position:absolute;top:0;left:0;right:0;height:56px;z-index:120;display:flex;align-items:center;
+  justify-content:space-between;padding:14px 30px 0;pointer-events:none;color:var(--ink)}
+.statusbar .time{font-size:16px;font-weight:700}
+.statusbar .sicons{display:flex;gap:7px;align-items:center}
+.island{position:absolute;top:12px;left:50%;transform:translateX(-50%);width:122px;height:36px;
+  border-radius:20px;background:#0b0b0b;z-index:121;pointer-events:none}
+
+svg.ic{display:block;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+/* ── экраны ── */
+.scr{position:absolute;inset:0;display:none;flex-direction:column;padding:76px 24px 30px;overflow-y:auto;
+  scrollbar-width:none;background:var(--bg)}
+.scr::-webkit-scrollbar{display:none}
+.scr.active{display:flex;animation:scrin .3s ease}
+@keyframes scrin{from{opacity:0;transform:translateX(14px)}to{opacity:1;transform:none}}
+.layer{position:absolute;inset:0;z-index:70;display:flex;flex-direction:column;background:var(--bg);
+  transform:translateY(103%);transition:transform .42s cubic-bezier(.32,.72,.28,1)}
+.layer.open{transform:translateY(0)}
+@keyframes fadeup{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.fu{animation:fadeup .4s ease both}
+
+.btn{border:0;border-radius:14px;font-family:inherit;font-size:16px;font-weight:600;padding:15px;cursor:pointer;
+  width:100%;transition:transform .12s,opacity .2s}
+.btn:active{transform:scale(.97)}
+.btn.pri{background:var(--acc);color:#fff;box-shadow:0 6px 18px rgba(95,143,102,.24)}
+.btn.sec{background:var(--card);color:var(--ink);border:1px solid var(--line)}
+.btn.black{background:#232320;color:#fff}
+.dark .btn.black{background:#0c0d0e}
+.btn:disabled{opacity:.4;pointer-events:none}
+.ltitle{font-size:24px;font-weight:700;margin-top:22px}
+.lsub{font-size:14px;color:var(--sub);margin-top:8px;line-height:1.55}
+.loginbtns{width:100%;margin-top:30px;display:flex;flex-direction:column;gap:10px}
+.demonote{font-size:11.5px;color:var(--sub);margin-top:18px;opacity:.75}
+.loginhero{position:relative;width:112px;height:112px;display:flex;align-items:center;justify-content:center}
+.lhglow{position:absolute;inset:-20px;border-radius:50%;
+  background:radial-gradient(circle,rgba(95,143,102,.28),transparent 70%);animation:lhpulse 3.4s ease-in-out infinite}
+@keyframes lhpulse{0%,100%{transform:scale(1);opacity:.8}50%{transform:scale(1.1);opacity:1}}
+.lhbadge{position:relative;width:96px;height:96px;border-radius:50%;background:var(--card);
+  border:1px solid var(--line);box-shadow:var(--shadow);display:flex;align-items:center;justify-content:center;color:var(--acc)}
+.link{background:none;border:0;color:var(--sub);font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;padding:12px}
+
+/* ── онбординг ── */
+.obhead{display:flex;align-items:center;gap:14px;margin-bottom:26px}
+.obback{background:none;border:0;color:var(--sub);cursor:pointer;padding:4px;font-family:inherit}
+.obtrack{flex:1;height:5px;border-radius:3px;background:var(--line);overflow:hidden}
+.obfill{height:100%;border-radius:3px;background:var(--acc);width:10%;transition:width .35s ease}
+.obtitle{font-size:25px;font-weight:700;line-height:1.28;letter-spacing:-.01em;margin-bottom:8px}
+.obsub{font-size:14px;color:var(--sub);line-height:1.55;margin-bottom:22px}
+.opt{display:flex;align-items:center;gap:13px;background:var(--card);border:1.5px solid var(--line);
+  border-radius:14px;padding:15px;font-family:inherit;font-size:15.5px;font-weight:600;color:var(--ink);
+  cursor:pointer;text-align:left;width:100%;margin-bottom:10px;transition:border-color .2s,background .2s;
+  animation:fadeup .35s ease both}
+.opt:nth-child(3){animation-delay:.04s}.opt:nth-child(4){animation-delay:.08s}
+.opt:nth-child(5){animation-delay:.12s}.opt:nth-child(6){animation-delay:.16s}
+.opt .oic{color:var(--sub);flex:none;transition:color .2s}
+.opt.sel{border-color:var(--acc);background:var(--accsoft)}
+.opt.sel .oic{color:var(--acc)}
+.opt .sub2{display:block;font-size:12.5px;color:var(--sub);font-weight:500;margin-top:2px}
+.opt .ocheck{margin-left:auto;width:22px;height:22px;border-radius:50%;border:1.8px solid var(--line);
+  display:flex;align-items:center;justify-content:center;color:transparent;flex:none;
+  transition:background .2s,border-color .2s,color .2s,transform .2s}
+.opt.sel .ocheck{background:var(--acc);border-color:var(--acc);color:#fff;transform:scale(1)}
+.opt.sel{animation:optpick .32s cubic-bezier(.34,1.56,.64,1)}
+@keyframes optpick{0%{transform:scale(1)}45%{transform:scale(1.025)}100%{transform:scale(1)}}
+.obfoot{margin-top:24px;padding-top:14px;position:sticky;bottom:0;background:var(--bg);
+  padding-bottom:2px;box-shadow:0 -14px 16px -8px var(--bg)}
+#s-onb.gender-f{--acc:#c98a95;--accd:#b5717e;--accsoft:#faeef0;transition:background .4s}
+.dark#s-onb.gender-f,.dark #s-onb.gender-f{--accsoft:#2c2224}
+.seg{display:flex;background:var(--card);border:1.5px solid var(--line);border-radius:12px;padding:3px;
+  margin-bottom:16px;position:relative}
+.seg .segthumb,.htabs .segthumb{position:absolute;top:3px;bottom:3px;border-radius:9px;background:var(--acc);
+  transition:transform .32s cubic-bezier(.34,1.4,.64,1),width .32s cubic-bezier(.34,1.4,.64,1);z-index:0}
+.segb{flex:1;border:0;background:none;border-radius:9px;padding:10px;font-family:inherit;font-size:14.5px;
+  font-weight:600;color:var(--sub);cursor:pointer;transition:color .25s;position:relative;z-index:1}
+.segb.sel{color:#fff}
+.frow{display:flex;align-items:center;justify-content:space-between;background:var(--card);
+  border:1.5px solid var(--line);border-radius:14px;padding:12px 15px;margin-bottom:10px;
+  transition:border-color .2s,background .2s}
+.frow.bump{border-color:var(--acc);background:var(--accsoft)}
+.frow .fl{font-size:15px;font-weight:600}
+.step{display:flex;align-items:center;gap:14px}
+.stepb{width:34px;height:34px;border-radius:11px;border:1.5px solid var(--line);background:var(--card);
+  color:var(--sub);cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:inherit;
+  transition:transform .1s,background .15s,color .15s}
+.stepb:active{transform:scale(.86);background:var(--accsoft);color:var(--acc)}
+.stepv{font-size:16px;font-weight:700;min-width:76px;text-align:center;font-variant-numeric:tabular-nums;
+  overflow:hidden;height:22px;position:relative;display:inline-flex;align-items:center;justify-content:center;gap:3px}
+.stepv .rollwrap{position:relative;display:inline-block;height:22px;min-width:26px}
+.stepv .roll{position:absolute;left:0;right:0;top:0;display:flex;align-items:center;justify-content:center;height:22px;
+  transition:transform .26s cubic-bezier(.34,1.5,.64,1),opacity .26s}
+.stepv .roll.up-out{transform:translateY(-100%);opacity:0}
+.stepv .roll.down-out{transform:translateY(100%);opacity:0}
+.stepv .roll.up-in{transform:translateY(100%);opacity:0}
+.stepv .roll.down-in{transform:translateY(-100%);opacity:0}
+.stepv .unit{color:var(--sub);font-weight:600;position:relative}
+.normcard{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;
+  box-shadow:var(--shadow);text-align:center;margin:18px 0}
+.normk{font-size:38px;font-weight:700;letter-spacing:-.02em}
+.normk small{font-size:16px;color:var(--sub);font-weight:600}
+.normrow{display:flex;justify-content:space-around;margin-top:16px;padding-top:16px;border-top:1px solid var(--line)}
+.normst b{font-size:18px;font-weight:700;display:block}
+.normst span{font-size:12px;color:var(--sub);font-weight:600}
+.adaptive{background:var(--accsoft);border:1px solid var(--acc);border-radius:14px;padding:13px 15px;
+  font-size:13.5px;line-height:1.55;color:var(--ink);margin-top:14px}
+.obbuilding{display:flex;flex-direction:column;align-items:center;text-align:center;padding-top:14vh}
+.obbicon{width:64px;height:64px;border-radius:50%;background:var(--accsoft);color:var(--acc);
+  display:flex;align-items:center;justify-content:center;animation:anbreathe 1.8s ease-in-out infinite}
+.obbttl{font-size:19px;font-weight:700;margin-top:18px}
+.obbsteps{margin-top:26px;display:flex;flex-direction:column;gap:14px;text-align:left}
+.obbstep{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:600;color:var(--sub);transition:color .3s}
+.obbic{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--line);display:flex;align-items:center;
+  justify-content:center;color:transparent;transition:all .3s;flex:none}
+.obbstep.done{color:var(--ink)}
+.obbstep.done .obbic{background:var(--acc);border-color:var(--acc);color:#fff}
+
+.platebox{display:flex;justify-content:center}
+.psector{animation:fadeup .5s ease both}
+
+/* ── главная ── */
+.appttl{font-size:26px;font-weight:700;letter-spacing:-.01em}
+.appsub{font-size:13.5px;color:var(--sub);margin-top:3px}
+.camwrap{display:flex;flex-direction:column;align-items:center;margin:22px 0 4px}
+.camring{position:relative;width:136px;height:136px;display:flex;align-items:center;justify-content:center}
+.camring svg.ring{position:absolute;inset:0;transform:rotate(-90deg)}
+.camring .rtrack{fill:none;stroke:var(--line);stroke-width:3}
+.camring .rfill{fill:none;stroke:var(--acc);stroke-width:3;stroke-linecap:round;
+  transition:stroke-dashoffset .5s ease}
+.cambtn{width:112px;height:112px;border-radius:50%;border:0;background:var(--acc);color:#fff;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;box-shadow:0 14px 34px rgba(95,143,102,.32);
+  transition:transform .15s;position:relative;z-index:1}
+.cambtn:active{transform:scale(.94)}
+.camlbl{margin-top:12px;font-size:14.5px;font-weight:600}
+.camcnt{margin-top:4px;font-size:12.5px;color:var(--sub);font-variant-numeric:tabular-nums}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:var(--shadow)}
+.sumrow{display:flex;justify-content:space-around;text-align:center}
+.sumst b{font-size:20px;font-weight:700;display:block;font-variant-numeric:tabular-nums}
+.sumst span{font-size:12px;color:var(--sub);font-weight:600}
+.kcalline{margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+.kcalline .kt{display:flex;justify-content:space-between;font-size:12.5px;font-weight:600;color:var(--sub)}
+.kcalline .kt b{color:var(--ink);font-variant-numeric:tabular-nums}
+.macrodiary{margin-top:14px;padding-top:14px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:9px}
+.macrorow{display:flex;align-items:center;gap:10px}
+.macrorow .mn{font-size:12.5px;font-weight:600;color:var(--sub);width:62px;flex:none}
+.macrorow .mtrack2{flex:1;height:5px;border-radius:3px;background:var(--line);overflow:hidden}
+.macrorow .mtrack2 i{display:block;height:100%;border-radius:3px;transition:width .5s ease}
+.macrorow .mv{font-size:12px;font-weight:700;color:var(--ink);width:88px;flex:none;text-align:right;
+  font-variant-numeric:tabular-nums}
+.macrorow .marrow{width:13px;flex:none;text-align:center;font-weight:700;font-size:12px}
+.ktrack{height:5px;border-radius:3px;background:var(--line);margin-top:8px;overflow:hidden}
+.kfill{height:100%;border-radius:3px;background:var(--acc);transition:width .6s ease}
+.hint{display:flex;gap:11px;align-items:flex-start;margin-top:12px;font-size:13.5px;color:var(--sub);line-height:1.5}
+.hint .oic{color:var(--acc);flex:none;margin-top:1px}
+.seclbl{font-size:15px;font-weight:700;margin:22px 0 10px;display:flex;align-items:center;gap:8px}
+.probadge{font-size:10px;font-weight:700;letter-spacing:.06em;background:var(--accsoft);color:var(--acc);
+  border-radius:6px;padding:2.5px 7px}
+.coach{font-size:13.5px;line-height:1.6;color:var(--ink)}
+.coach.locked{color:var(--sub)}
+.coach .cw{display:flex;align-items:center;gap:8px;font-weight:700;margin-bottom:8px;color:var(--acc)}
+.trend{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:700;border-radius:8px;
+  padding:2px 8px;background:var(--accsoft);color:var(--acc)}
+
+/* ── камера ── */
+#l-camera{background:#141613;z-index:80}
+.camview{flex:1;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;
+  background:radial-gradient(90% 70% at 50% 42%,#242721,#141613)}
+#camVideo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none}
+#camVideo.on{display:block}
+.bracket{position:absolute;width:26px;height:26px;border:2px solid rgba(255,255,255,.85);z-index:1}
+.b-tl{top:70px;left:26px;border-right:0;border-bottom:0;border-radius:6px 0 0 0}
+.b-tr{top:70px;right:26px;border-left:0;border-bottom:0;border-radius:0 6px 0 0}
+.b-bl{bottom:120px;left:26px;border-right:0;border-top:0;border-radius:0 0 0 6px}
+.b-br{bottom:120px;right:26px;border-left:0;border-top:0;border-radius:0 0 6px 0}
+.anpct{font-size:13px;color:var(--sub);font-weight:600;margin-top:4px;font-variant-numeric:tabular-nums}
+.camgrid{position:absolute;inset:0;opacity:.14;
+  background:linear-gradient(rgba(255,255,255,.5) .5px,transparent .5px) 0 0/100% 33.4%,
+             linear-gradient(90deg,rgba(255,255,255,.5) .5px,transparent .5px) 0 0/33.4% 100%}
+.bracket{position:absolute;width:26px;height:26px;border:2px solid rgba(255,255,255,.85)}
+.b-tl{top:56px;left:34px;border-right:0;border-bottom:0;border-radius:6px 0 0 0}
+.b-tr{top:56px;right:34px;border-left:0;border-bottom:0;border-radius:0 6px 0 0}
+.b-bl{bottom:110px;left:34px;border-right:0;border-top:0;border-radius:0 0 0 6px}
+.b-br{bottom:110px;right:34px;border-left:0;border-top:0;border-radius:0 0 6px 0}
+.camhint{position:absolute;bottom:34px;left:0;right:0;text-align:center;color:rgba(255,255,255,.75);
+  font-size:13.5px;font-weight:500}
+.camtop{position:absolute;top:70px;left:22px;z-index:2}
+.camx{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.12);border:0;color:#fff;cursor:pointer;
+  display:flex;align-items:center;justify-content:center}
+.cambar{padding:22px 0 calc(34px + env(safe-area-inset-bottom));display:flex;justify-content:center;background:#141613}
+.shutter{width:74px;height:74px;border-radius:50%;border:4px solid #fff;background:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;transition:transform .12s}
+.shutter:active{transform:scale(.9)}
+.shutter i{width:56px;height:56px;border-radius:50%;background:#fff;display:block;pointer-events:none}
+.flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:5}
+.flash.on{animation:flash .35s ease}
+@keyframes flash{0%{opacity:0}25%{opacity:.9}100%{opacity:0}}
+
+/* ── анализ ── */
+.anscan{position:relative;width:76px;height:76px;border-radius:50%;background:var(--accsoft);
+  display:flex;align-items:center;justify-content:center;overflow:hidden;
+  box-shadow:0 0 0 1px var(--line)}
+.anscan::before{content:"";position:absolute;inset:-2px;border-radius:50%;
+  background:conic-gradient(from 0deg,transparent 0%,var(--acc) 12%,transparent 24%);
+  animation:anrot 1.3s linear infinite}
+.anscan::after{content:"";position:absolute;inset:5px;border-radius:50%;background:var(--accsoft)}
+.anscan svg{position:relative;z-index:1;animation:anbreathe 1.8s ease-in-out infinite}
+@keyframes anrot{to{transform:rotate(360deg)}}
+@keyframes anbreathe{0%,100%{opacity:.7;transform:scale(1)}50%{opacity:1;transform:scale(1.08)}}
+.ansteps{margin-top:8px;display:flex;flex-direction:column;gap:12px;text-align:left}
+.anstep{display:flex;align-items:center;gap:10px;font-size:14.5px;font-weight:600;color:var(--sub);transition:color .3s}
+.anstep .aic{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--line);display:flex;align-items:center;
+  justify-content:center;color:transparent;transition:all .3s;flex:none}
+.anstep.done{color:var(--ink)}
+.anstep.done .aic{background:var(--acc);border-color:var(--acc);color:#fff}
+
+/* ── результат ── */
+#l-result{z-index:86}
+.resscroll{flex:1;overflow-y:auto;padding:76px 24px 120px;scrollbar-width:none}
+.resscroll::-webkit-scrollbar{display:none}
+.reshead{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.resttl{font-size:22px;font-weight:700}
+.restime{font-size:13px;color:var(--sub);margin-bottom:14px}
+.srcbadge{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;border-radius:8px;
+  padding:3px 9px;margin-bottom:12px;letter-spacing:.02em}
+.srcbadge.ai{background:var(--accsoft);color:var(--acc)}
+.srcbadge.demo{background:var(--line);color:var(--sub)}
+.scorewrap{display:flex;align-items:center;gap:16px;margin:8px 0 4px}
+.scorering{position:relative;width:132px;height:132px;flex:none;display:flex;align-items:center;justify-content:center}
+.scorering svg{position:absolute;inset:0;transform:rotate(-90deg)}
+.srt{fill:none;stroke:var(--line);stroke-width:7}
+.srf{fill:none;stroke-width:7;stroke-linecap:round;transition:stroke-dashoffset .9s cubic-bezier(.22,.9,.3,1),stroke .3s}
+.srnum{font-size:32px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1}
+.srsub{font-size:10.5px;color:var(--sub);font-weight:600;margin-top:3px;text-align:center}
+.scoreleg{flex:1;display:flex;flex-direction:column;gap:9px}
+.legrow{display:flex;align-items:center;gap:9px;font-size:12.5px;font-weight:600}
+.legdot{width:9px;height:9px;border-radius:3px;flex:none}
+.legrow .lv{margin-left:auto;font-variant-numeric:tabular-nums;color:var(--sub)}
+.legbar{height:4px;border-radius:2px;background:var(--line);margin-top:4px;overflow:hidden}
+.legbarf{height:100%;border-radius:2px;transition:width .7s ease}
+.legwrap{flex:1}
+.scoretagline{display:flex;align-items:center;gap:10px;margin-top:14px;flex-wrap:wrap}
+.scoretag{font-size:12.5px;font-weight:700;border-radius:8px;padding:4px 10px}
+.kcaltag{font-size:12.5px;font-weight:600;color:var(--sub);font-variant-numeric:tabular-nums}
+.rec{margin-top:12px;font-size:14px;line-height:1.55;color:var(--ink)}
+.resreact{margin-top:10px;font-size:14.5px;font-weight:700}
+.res100{margin-top:8px;font-size:11.5px;color:var(--sub);line-height:1.5}
+.prods{margin-top:20px}
+.prod{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);
+  border-radius:14px;padding:11px 13px;margin-bottom:9px}
+.prod.animate{animation:fadeup .35s ease both}
+.prod.animate:nth-child(2){animation-delay:.05s}.prod.animate:nth-child(3){animation-delay:.1s}
+.prod.animate:nth-child(4){animation-delay:.15s}.prod.animate:nth-child(5){animation-delay:.2s}
+.prodic{width:38px;height:38px;border-radius:11px;background:var(--accsoft);display:flex;align-items:center;
+  justify-content:center;flex:none}
+.prod .meta{flex:1;min-width:0}
+.prod .pn{font-size:14.5px;font-weight:600}
+.prod .pg{font-size:12px;color:var(--sub);margin-top:1px;font-variant-numeric:tabular-nums}
+.pbtn{width:30px;height:30px;border-radius:10px;border:1.5px solid var(--line);background:var(--card);
+  color:var(--sub);cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:inherit}
+.pdel{border:0;background:none;color:var(--sub);cursor:pointer;padding:5px;margin-left:2px}
+.addprod{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.chip{border:1.5px dashed var(--line);background:none;border-radius:20px;padding:8px 14px;font-family:inherit;
+  font-size:13px;font-weight:600;color:var(--sub);cursor:pointer}
+.chip:active{border-color:var(--acc);color:var(--acc)}
+.chip.sel{border-style:solid;border-color:var(--acc);color:var(--acc);background:var(--accsoft)}
+.microlist{display:flex;flex-direction:column;gap:10px}
+.micro{font-size:13px;font-weight:600}
+.micro .mt{display:flex;justify-content:space-between;color:var(--ink)}
+.micro .mt span{color:var(--sub);font-variant-numeric:tabular-nums;font-weight:600}
+.mtrack{height:5px;border-radius:3px;background:var(--line);margin-top:6px;overflow:hidden}
+.mfill{height:100%;border-radius:3px;background:var(--acc);transition:width .7s ease}
+.resfoot{position:absolute;left:0;right:0;bottom:0;padding:14px 24px calc(24px + env(safe-area-inset-bottom));
+  background:var(--bg);border-top:1px solid var(--line);display:flex;gap:10px}
+
+/* ── история ── */
+.hentry{display:flex;align-items:center;gap:13px;background:var(--card);border:1px solid var(--line);
+  border-radius:16px;padding:12px;margin-bottom:10px;cursor:pointer;transition:transform .12s;
+  animation:fadeup .35s ease both}
+.hentry:active{transform:scale(.98)}
+.hthumb{width:52px;height:52px;border-radius:13px;flex:none;background:var(--accsoft);display:flex;
+  align-items:center;justify-content:center}
+.hentry .meta{flex:1;min-width:0}
+.hentry .hn{font-size:14.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hentry .ht{font-size:12px;color:var(--sub);margin-top:2px}
+.hmark{width:10px;height:10px;border-radius:50%;flex:none}
+.daylbl{display:flex;justify-content:space-between;align-items:center;font-size:12px;font-weight:700;
+  color:var(--sub);text-transform:uppercase;letter-spacing:.06em;margin:14px 0 8px}
+.dayavg{font-size:11px;font-weight:700;letter-spacing:0;text-transform:none;color:var(--sub)}
+.htabs{display:flex;background:var(--card);border:1.5px solid var(--line);border-radius:12px;padding:3px;margin-bottom:16px;position:relative}
+.daydetail{margin-top:10px;padding-top:10px;border-top:1px solid var(--line);font-size:13px;color:var(--sub);line-height:1.5;min-height:18px}
+.wnow{font-size:32px;font-weight:700;letter-spacing:-.02em}
+.wunit{font-size:15px;color:var(--sub);font-weight:600}
+.wtrends{display:flex;gap:16px;margin-top:10px;font-size:12.5px;color:var(--sub);font-weight:600}
+.wtrends b{color:var(--ink);font-variant-numeric:tabular-nums}
+.wrow{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);
+  border-radius:14px;padding:11px 14px;margin-bottom:9px;cursor:pointer}
+.wrow .wd{flex:1;font-size:13.5px;color:var(--sub)}
+.wrow .wv{font-size:15px;font-weight:700;font-variant-numeric:tabular-nums}
+.wrow .oic{color:var(--sub);flex:none}
+.wminicards{display:flex;gap:10px;margin-top:12px}
+.wminicard{flex:1;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;position:relative}
+.wmlbl{font-size:11.5px;color:var(--sub);font-weight:700;text-transform:uppercase;letter-spacing:.04em;
+  display:flex;align-items:center;gap:6px}
+.wmval{font-size:19px;font-weight:700;margin-top:6px}
+.wmsub{font-size:11.5px;color:var(--sub);margin-top:2px;line-height:1.4}
+.bars{display:flex;align-items:flex-end;gap:9px;height:120px;margin-top:6px}
+.barcol{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end}
+.barcol i{width:100%;border-radius:6px;background:var(--acc);opacity:.5;transition:height .5s ease}
+.barcol.cur i{opacity:1}
+.barcol{cursor:pointer}
+.barcol.picked i{background:var(--accd);opacity:1}
+.barcol.picked b{color:var(--acc)}
+.barcol b{font-size:10px;color:var(--sub);font-weight:700;font-variant-numeric:tabular-nums}
+.barcol span{font-size:10.5px;color:var(--sub);font-weight:600}
+.rangeseg{display:flex;gap:8px;margin:14px 0 4px;flex-wrap:wrap}
+.rbtn{border:1.5px solid var(--line);background:var(--card);border-radius:10px;padding:7px 13px;font-family:inherit;
+  font-size:12.5px;font-weight:600;color:var(--sub);cursor:pointer;display:flex;align-items:center;gap:6px}
+.rbtn.sel{border-color:var(--acc);color:var(--acc);background:var(--accsoft)}
+.freq{display:flex;justify-content:space-between;font-size:13.5px;font-weight:600;padding:9px 0;
+  border-bottom:1px solid var(--line)}
+.freq:last-child{border-bottom:0}
+.freq span{color:var(--sub);font-variant-numeric:tabular-nums}
+.suggestrow{display:flex;align-items:center;gap:11px;background:var(--card);border:1px solid var(--line);
+  border-radius:14px;padding:10px 12px;margin-bottom:8px;cursor:pointer}
+.suggestrow .sn{flex:1;font-size:13.5px;font-weight:600}
+.suggestrow .chip{padding:6px 12px;font-size:12px}
+.recipe{display:flex;gap:12px;align-items:center;background:var(--card);border:1px solid var(--line);
+  border-radius:16px;padding:13px;margin-bottom:10px}
+.recipe .ric{width:42px;height:42px;border-radius:12px;background:var(--accsoft);display:flex;align-items:center;
+  justify-content:center;flex:none;color:var(--acc)}
+.recipe .meta{flex:1;min-width:0}
+.recipe .rn{font-size:14.5px;font-weight:700}
+.recipe .rd{font-size:12.5px;color:var(--sub);margin-top:2px;line-height:1.45}
+.recipe .rtag{font-size:11px;font-weight:700;color:var(--sub);margin-top:5px;display:flex;align-items:center;gap:5px}
+.recipelock{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;text-align:center}
+.recipelock .rl-icon{color:var(--sub);margin-bottom:8px}
+.recipelock .rl-txt{font-size:13.5px;color:var(--sub);line-height:1.5;margin-bottom:12px}
+.recipeteaser{display:flex;align-items:center;gap:12px;cursor:pointer}
+.recipeteaser:active{transform:scale(.98)}
+
+/* ── профиль ── */
+.prow{display:flex;align-items:center;gap:13px;background:var(--card);border:1px solid var(--line);
+  border-radius:14px;padding:14px 15px;margin-bottom:10px;font-size:15px;font-weight:600;cursor:pointer}
+.prow .oic{color:var(--acc);flex:none}
+.prow .pv{margin-left:auto;color:var(--sub);font-size:13.5px;font-weight:600;display:flex;align-items:center;gap:7px}
+.toggle{margin-left:auto;width:46px;height:28px;border-radius:15px;background:var(--line);position:relative;
+  cursor:pointer;transition:background .25s;flex:none}
+.toggle::after{content:"";position:absolute;top:2px;left:2px;width:24px;height:24px;border-radius:50%;
+  background:#fff;transition:transform .25s;box-shadow:0 1px 4px rgba(0,0,0,.25)}
+.toggle.on{background:var(--acc)}
+.toggle.on::after{transform:translateX(18px)}
+.notiftimes{display:none;gap:8px;margin:-2px 0 10px;padding-left:4px}
+.notiftimes.show{display:flex}
+.footnote{font-size:12px;color:var(--sub);text-align:center;margin-top:16px;line-height:1.5}
+.subcard{display:flex;align-items:center;gap:13px;background:var(--card);border:1.5px solid var(--line);
+  border-radius:16px;padding:14px 15px;margin-bottom:14px;cursor:pointer;transition:transform .1s}
+.subcard:active{transform:scale(.98)}
+.subcard.pro{border-color:var(--acc);background:var(--accsoft)}
+.subic{width:38px;height:38px;border-radius:11px;background:var(--accsoft);color:var(--acc);flex:none;
+  display:flex;align-items:center;justify-content:center}
+.subcard.pro .subic{background:var(--acc);color:#fff}
+.submeta{flex:1;min-width:0}
+.subttl{font-size:15px;font-weight:700}
+.subsub{font-size:12.5px;color:var(--sub);margin-top:2px}
+
+/* ── pro ── */
+#l-pro{z-index:88}
+#l-recipe{z-index:89}
+.recipehero{display:flex;align-items:center;gap:12px;margin-top:4px}
+.recipeheroic{width:44px;height:44px;border-radius:12px;background:var(--accsoft);color:var(--acc);
+  display:flex;align-items:center;justify-content:center;flex:none}
+.ringrow{display:flex;align-items:center;gap:10px;font-size:14px;padding:7px 0;border-bottom:1px solid var(--line)}
+.ringrow:last-child{border-bottom:0}
+.ringdot{width:6px;height:6px;border-radius:50%;background:var(--acc);flex:none}
+.rstep{display:flex;gap:12px;margin-bottom:12px}
+.rstepnum{width:24px;height:24px;border-radius:50%;background:var(--acc);color:#fff;font-size:12px;font-weight:700;
+  flex:none;display:flex;align-items:center;justify-content:center}
+.rsteptxt{font-size:14px;line-height:1.55;padding-top:2px}
+.recipetip{margin-top:8px;background:var(--accsoft);border-radius:14px;padding:13px 15px;font-size:13.5px;
+  color:var(--ink);line-height:1.5}
+.proscroll{flex:1;overflow-y:auto;padding:76px 24px 30px;scrollbar-width:none}
+.proscroll::-webkit-scrollbar{display:none}
+.prottl{font-size:25px;font-weight:700;letter-spacing:-.01em}
+.prosub{font-size:14px;color:var(--sub);margin-top:6px;line-height:1.5}
+.prohero{height:64px;border-radius:0 0 24px 24px;background:linear-gradient(160deg,var(--accsoft),transparent);
+  margin:-76px -24px 0;display:flex;align-items:flex-end;justify-content:center;padding-bottom:6px}
+.prheroicon{width:52px;height:52px;border-radius:50%;background:var(--acc);color:#fff;display:flex;
+  align-items:center;justify-content:center;box-shadow:0 10px 24px rgba(95,143,102,.3);
+  border:3px solid var(--bg)}
+.cmptbl{margin-top:20px;background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.cmphead,.cmprow{display:grid;grid-template-columns:1fr 64px 64px;align-items:center;padding:12px 15px;
+  border-bottom:1px solid var(--line);font-size:13.5px}
+.cmphead{font-weight:700;color:var(--sub);font-size:12px;text-transform:uppercase;letter-spacing:.05em}
+.cmprow:last-child{border-bottom:0}
+.cmprow .cf{font-weight:600}
+.cm{display:flex;justify-content:center;color:var(--acc)}
+.cm.no{color:var(--line)}
+.cm.txt{font-size:12.5px;color:var(--sub);font-weight:600}
+.pricecard{margin-top:18px;background:var(--accsoft);border:1.5px solid var(--acc);border-radius:16px;padding:16px;text-align:center}
+.pricecard b{font-size:22px;font-weight:700}
+.pricecard span{display:block;font-size:13px;color:var(--sub);margin-top:4px;line-height:1.5}
+.plans{display:flex;gap:10px;margin-top:18px}
+.plan{flex:1;background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:13px;
+  cursor:pointer;position:relative;text-align:center;transition:transform .1s}
+.plan:active{transform:scale(.98)}
+.plan.sel{border-color:var(--acc);background:var(--accsoft)}
+.plan .pn{font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--sub)}
+.plan.sel .pn{color:var(--accd)}
+.plan .pp{font-size:19px;font-weight:700;margin-top:4px}
+.plan .pd{font-size:11px;color:var(--sub);font-weight:600;margin-top:2px}
+.plan .save{position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--acc);color:#fff;
+  font-size:9.5px;font-weight:700;border-radius:8px;padding:3px 8px;letter-spacing:.03em;white-space:nowrap}
+
+/* ── шторки ── */
+.dim{position:absolute;inset:0;background:rgba(0,0,0,.4);z-index:110;opacity:0;pointer-events:none;transition:opacity .3s}
+.dim.on{opacity:1;pointer-events:auto}
+.sheet{position:absolute;left:0;right:0;bottom:0;z-index:115;background:var(--card);border-radius:22px 22px 0 0;
+  transform:translateY(105%);transition:transform .4s cubic-bezier(.32,.72,.28,1);
+  padding:20px 24px calc(28px + env(safe-area-inset-bottom))}
+.sheet.open{transform:translateY(0)}
+.sheetttl{font-size:17px;font-weight:700;margin-bottom:4px}
+.sheetsub{font-size:13px;color:var(--sub);margin-bottom:14px;line-height:1.5}
+.paystage{min-height:96px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;margin-top:8px}
+.pst{display:none;flex-direction:column;align-items:center;gap:10px;width:100%}
+.pst.on{display:flex}
+.pst .lbl{font-size:13px;color:var(--sub)}
+.donec{width:44px;height:44px;border-radius:50%;background:var(--acc);color:#fff;display:flex;align-items:center;justify-content:center}
+.pop{animation:pop .35s cubic-bezier(.34,1.56,.64,1)}
+@keyframes pop{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
+.scan{animation:pop .35s cubic-bezier(.34,1.56,.64,1),sc 1.1s .35s ease-in-out}
+@keyframes sc{0%,100%{opacity:1}50%{opacity:.35}}
+.psnote{font-size:11px;color:var(--sub);margin-top:12px;text-align:center}
+
+/* таббар */
+.tabbar{position:absolute;left:0;right:0;bottom:0;z-index:60;display:flex;background:var(--card);
+  border-top:1px solid var(--line);padding:9px 6px calc(16px + env(safe-area-inset-bottom))}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:0;
+  font-family:inherit;font-size:10.5px;font-weight:600;color:var(--sub);cursor:pointer;transition:color .2s}
+.tab.on{color:var(--acc)}
+.tab .oic{pointer-events:none}
+
+/* тосты */
+.toast{position:absolute;top:66px;left:50%;transform:translate(-50%,-24px);z-index:130;background:var(--card);
+  border:1px solid var(--line);border-radius:14px;padding:10px 18px;font-size:13.5px;font-weight:600;color:var(--ink);
+  opacity:0;transition:all .35s ease;pointer-events:none;white-space:nowrap;box-shadow:var(--shadow);
+  display:flex;align-items:center;gap:12px}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.toast.action{pointer-events:auto}
+.toastbtn{border:0;background:none;color:var(--acc);font-family:inherit;font-size:13.5px;font-weight:700;cursor:pointer}
+
+/* ── туториал (авто-слайдшоу) ── */
+.tut{position:absolute;inset:0;z-index:140;display:none;align-items:center;justify-content:center;
+  background:rgba(20,22,19,.92);padding:0 26px;cursor:pointer}
+.tut.on{display:flex}
+.tutcard{width:100%;max-width:320px;text-align:center;animation:tutcardin .4s cubic-bezier(.22,.9,.3,1) both}
+@keyframes tutcardin{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:none}}
+.tutprog{display:flex;gap:5px;margin-bottom:28px}
+.tutprog i{flex:1;height:3px;border-radius:2px;background:rgba(255,255,255,.2);overflow:hidden;position:relative}
+.tutprog i b{position:absolute;inset:0;background:#fff;transform:scaleX(0);transform-origin:left;border-radius:2px}
+.tutprog i.done b{transform:scaleX(1);transition:none}
+.tutprog i.play b{transform:scaleX(1);transition:transform 3.1s linear}
+.tuticon{position:relative;width:76px;height:76px;border-radius:50%;background:rgba(124,171,131,.16);margin:0 auto 22px;
+  display:flex;align-items:center;justify-content:center;color:#9cc7a2;
+  transition:opacity .26s ease,transform .26s ease}
+.tuticon::before{content:"";position:absolute;inset:-14px;border-radius:50%;
+  background:radial-gradient(circle,rgba(124,171,131,.22),transparent 70%);z-index:-1}
+.tut .tutttl,.tut .tuttxt{transition:opacity .26s ease,transform .26s ease}
+.tutswap{opacity:0;transform:translateY(7px)}
+.tut .tutttl{font-size:21px;font-weight:700;color:#fff;letter-spacing:-.01em}
+.tut .tuttxt{font-size:14.5px;color:rgba(255,255,255,.62);line-height:1.6;margin-top:10px}
+.tutdots{display:flex;gap:6px;justify-content:center;margin-top:26px}
+.tutdots span{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.25);transition:all .3s}
+.tutdots span.on{background:#fff;width:16px;border-radius:3px}
+.tutskip{position:absolute;top:22px;right:22px;background:rgba(255,255,255,.1);border:0;color:rgba(255,255,255,.8);
+  font-family:inherit;font-size:12.5px;font-weight:600;cursor:pointer;padding:8px 14px;border-radius:20px}
+.tutskip:active{background:rgba(255,255,255,.18)}
+
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001s!important;transition-duration:.001s!important}}
+@media (min-width:561px) and (max-height:960px){.phone{transform:scale(.78)}.caption{margin-top:-64px}}
+@media (max-width:560px){
+  body{background:var(--bg)}
+  .phone{width:100vw;height:100dvh;border-radius:0;box-shadow:none}
+  .screen{border-radius:0}
+  .sidebtn,.caption,.island{display:none}
+  .statusbar{display:none}
+  .scr,.resscroll,.proscroll{padding-top:calc(18px + env(safe-area-inset-top))}
+  .camtop{top:calc(16px + env(safe-area-inset-top))}
+  .b-tl,.b-tr{top:calc(16px + env(safe-area-inset-top) + 40px)}
+  .toast{top:calc(16px + env(safe-area-inset-top))}
+}
+</style>
+</head>
+<body>
+
+<!-- единый набор линейных иконок -->
+<svg width="0" height="0" style="position:absolute">
+  <symbol id="i-cam" viewBox="0 0 24 24"><path d="M4 8.5A2.5 2.5 0 0 1 6.5 6h1.6l1.2-2h5.4l1.2 2h1.6A2.5 2.5 0 0 1 20 8.5v8A2.5 2.5 0 0 1 17.5 19h-11A2.5 2.5 0 0 1 4 16.5v-8z"/><circle cx="12" cy="12.4" r="3.4"/></symbol>
+  <symbol id="i-plate" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.6"/><path d="M12 3.4v17.2M12 12l6.1 6.1M12 12l6.1-6.1"/></symbol>
+  <symbol id="i-hist" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.6"/><path d="M12 7.2V12l3.1 2.1"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M5 19V13M12 19V6.5M19 19v-8.5M3.5 19h17"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8.4" r="3.6"/><path d="M4.8 19.6c.9-3.6 3.7-5.6 7.2-5.6s6.3 2 7.2 5.6"/></symbol>
+  <symbol id="i-chevl" viewBox="0 0 24 24"><path d="M14.5 5.5 8 12l6.5 6.5"/></symbol>
+  <symbol id="i-chevr" viewBox="0 0 24 24"><path d="M9.5 5.5 16 12l-6.5 6.5"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.8l4.4 4.4L19 7.4"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5.5v13M5.5 12h13"/></symbol>
+  <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5.5 12h13"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 16.5v-5a6 6 0 0 1 12 0v5l1.6 2H4.4l1.6-2zM10 20.5a2 2 0 0 0 4 0"/></symbol>
+  <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 19.6S4.6 15.2 4.6 9.9A4 4 0 0 1 12 7.7a4 4 0 0 1 7.4 2.2c0 5.3-7.4 9.7-7.4 9.7z"/></symbol>
+  <symbol id="i-export" viewBox="0 0 24 24"><path d="M12 4v10m0 0-3.6-3.6M12 14l3.6-3.6M5 17.5V19a1.5 1.5 0 0 0 1.5 1.5h11A1.5 1.5 0 0 0 19 19v-1.5"/></symbol>
+  <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4.5 8h9M17.5 8h2M4.5 16h2M10.5 16h9"/><circle cx="15.5" cy="8" r="2"/><circle cx="8.5" cy="16" r="2"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M19.5 14.2A7.8 7.8 0 0 1 9.8 4.5a7.8 7.8 0 1 0 9.7 9.7z"/></symbol>
+  <symbol id="i-leaf" viewBox="0 0 24 24"><path d="M5.5 18.5C5.5 10 11 5.5 19 5.5c0 8-4.5 13.5-13 13.5h-.5zM5.5 18.5C8 13.5 11.5 10.5 15 9"/></symbol>
+  <symbol id="i-fruit" viewBox="0 0 24 24"><path d="M12 7.5c-1-1.6-2.7-2.2-4.3-1.7C4.6 6.8 3.6 10.4 5 14c1.3 3.4 4 5.8 7 5.8s5.7-2.4 7-5.8c1.4-3.6.4-7.2-2.7-8.2-1.6-.5-3.3.1-4.3 1.7zM12 7.5V5.4c0-1.2.8-2.2 2-2.4"/></symbol>
+  <symbol id="i-grain" viewBox="0 0 24 24"><path d="M12 21V8M12 8c-2.4 0-4-1.6-4-4 2.4 0 4 1.6 4 4zm0 0c2.4 0 4-1.6 4-4-2.4 0-4 1.6-4 4zM12 13c-2.4 0-4-1.6-4-4 2.4 0 4 1.6 4 4zm0 0c2.4 0 4-1.6 4-4-2.4 0-4 1.6-4 4zM12 18c-2.4 0-4-1.6-4-4 2.4 0 4 1.6 4 4zm0 0c2.4 0 4-1.6 4-4-2.4 0-4 1.6-4 4z"/></symbol>
+  <symbol id="i-fish" viewBox="0 0 24 24"><path d="M4 12c2.6-3.4 6-5 9.4-5 2.9 0 5.3 1.9 6.6 5-1.3 3.1-3.7 5-6.6 5C10 17 6.6 15.4 4 12zM4 12 2.5 8.5M4 12l-1.5 3.5"/><circle cx="16.4" cy="11" r=".9" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="i-drumstick" viewBox="0 0 24 24"><path d="M9.5 14.5c-2.4 2.4-3.5 4.6-2.3 5.8s3.4-.1 5.8-2.3M9.5 14.5a5 5 0 0 1 7-7c2.6 2.6 3 6.7.9 8.8a5 5 0 0 1-6-.9zm0 0 1.8 1.8"/></symbol>
+  <symbol id="i-egg" viewBox="0 0 24 24"><path d="M12 21c4 0 6.5-2.6 6.5-7 0-5-3-10.5-6.5-10.5S5.5 9 5.5 14c0 4.4 2.5 7 6.5 7z"/></symbol>
+  <symbol id="i-nut" viewBox="0 0 24 24"><path d="M12 3.5c-3 0-5.5 2.7-5.5 7 0 5.6 2.6 10 5.5 10s5.5-4.4 5.5-10c0-4.3-2.5-7-5.5-7z"/><path d="M12 3.5V21M8.5 9h7"/></symbol>
+  <symbol id="i-drop" viewBox="0 0 24 24"><path d="M12 3.5c3.4 4 5.6 7 5.6 10a5.6 5.6 0 0 1-11.2 0c0-3 2.2-6 5.6-10z"/></symbol>
+  <symbol id="i-pencil" viewBox="0 0 24 24"><path d="M5 19l.9-3.6L16.4 4.9a1.8 1.8 0 0 1 2.6 0l.1.1a1.8 1.8 0 0 1 0 2.6L8.6 18.1 5 19zM14.8 6.5l2.7 2.7"/></symbol>
+  <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 4.5 13.6 10 19 11.5 13.6 13 12 18.5 10.4 13 5 11.5 10.4 10 12 4.5z"/></symbol>
+  <symbol id="i-faceid" viewBox="0 0 24 24"><path d="M4 8V6.5A2.5 2.5 0 0 1 6.5 4H8M16 4h1.5A2.5 2.5 0 0 1 20 6.5V8M20 16v1.5a2.5 2.5 0 0 1-2.5 2.5H16M8 20H6.5A2.5 2.5 0 0 1 4 17.5V16M9 10v1.4M15 10v1.4M12 10v3.4h-1.2M9.4 15.6a3.9 3.9 0 0 0 5.2 0"/></symbol>
+  <symbol id="i-inf" viewBox="0 0 24 24"><path d="M12 12c-1.5-2.2-2.9-3.3-4.6-3.3a3.3 3.3 0 0 0 0 6.6c1.7 0 3.1-1.1 4.6-3.3zm0 0c1.5 2.2 2.9 3.3 4.6 3.3a3.3 3.3 0 0 0 0-6.6c-1.7 0-3.1 1.1-4.6 3.3z"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M18.4 5.6 17 7M7 17l-1.4 1.4"/></symbol>
+  <symbol id="i-tap" viewBox="0 0 24 24"><path d="M9 11V6.5a1.8 1.8 0 0 1 3.6 0V11m0-1.5a1.7 1.7 0 0 1 3.4 0V12m0-1a1.6 1.6 0 0 1 3.2 0v3.4c0 3-1.8 5.6-5 5.6h-1.8c-1.8 0-2.9-.6-3.8-1.9l-2.4-3.4a1.7 1.7 0 0 1 2.7-2l1.1 1.3"/></symbol>
+</svg>
+
+<div class="phone">
+  <div class="sidebtn sb-power"></div>
+  <div class="sidebtn sb-vup"></div>
+  <div class="sidebtn sb-vdn"></div>
+
+  <div class="screen" id="screen">
+    <div class="island"></div>
+    <div class="statusbar">
+      <span class="time" id="clock">9:41</span>
+      <span class="sicons">
+        <svg width="17" height="12" viewBox="0 0 18 12" style="fill:currentColor"><rect x="0" y="7" width="3" height="5" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2.5" width="3" height="9.5" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>
+        <svg width="26" height="13" viewBox="0 0 27 13"><rect x=".5" y=".5" width="22" height="12" rx="3.5" fill="none" stroke="currentColor" opacity=".4"/><rect x="2.5" y="2.5" width="14" height="8" rx="1.8" fill="currentColor"/><path d="M24.5 4.5v4a2.2 2.2 0 0 0 0-4z" fill="currentColor" opacity=".4"/></svg>
+      </span>
+    </div>
+
+    <!-- ═════ ОНБОРДИНГ ═════ -->
+    <!-- ═════ ЛОГИН ═════ -->
+    <div class="scr active" id="s-login" style="align-items:center;text-align:center">
+      <div style="flex:1"></div>
+      <div class="loginhero">
+        <div class="lhglow"></div>
+        <div class="lhbadge"><svg class="ic" width="46" height="46"><use href="#i-plate"/></svg></div>
+      </div>
+      <div class="ltitle">Здравствуйте!</div>
+      <div class="lsub">Добро пожаловать в Тарелку —<br>метод Гарвардской тарелки без подсчёта калорий</div>
+      <div class="loginbtns">
+        <button class="btn black" data-act="login">Продолжить с Apple ID</button>
+        <button class="btn sec" data-act="login">Продолжить с Google</button>
+        <button class="btn pri" data-act="login">Войти по email</button>
+      </div>
+      <div class="demonote">Концепт-демо — учётная запись не создаётся</div>
+      <div style="flex:1"></div>
+    </div>
+
+    <div class="scr" id="s-onb">
+      <div class="obhead">
+        <button class="obback" data-act="obback"><svg class="ic" width="22" height="22"><use href="#i-chevl"/></svg></button>
+        <div class="obtrack"><div class="obfill" id="obFill"></div></div>
+      </div>
+      <div id="obBody"></div>
+      <div class="obfoot">
+        <button class="btn pri" id="obNext" data-act="obnext">Далее</button>
+      </div>
+    </div>
+
+    <!-- ═════ ПРИЛОЖЕНИЕ ═════ -->
+    <div class="scr" id="s-app">
+      <div style="flex:1;position:relative">
+        <!-- ГЛАВНАЯ -->
+        <div class="scr active" id="av-home" style="padding:0 0 110px">
+          <div class="appttl" id="homeGreet">Добрый день</div>
+          <div class="appsub" id="homeDate">Понедельник</div>
+          <div class="camwrap">
+            <div class="camring" id="homeCamTarget">
+              <svg class="ring" width="136" height="136" viewBox="0 0 136 136">
+                <circle class="rtrack" cx="68" cy="68" r="64"/>
+                <circle class="rfill" id="scanRing" cx="68" cy="68" r="64" stroke-dasharray="402.1" stroke-dashoffset="402.1"/>
+              </svg>
+              <button class="cambtn" data-act="opencam"><svg class="ic" width="42" height="42"><use href="#i-cam"/></svg></button>
+            </div>
+            <div class="camlbl">Сфотографировать тарелку</div>
+            <div class="camcnt" id="scanCnt">Сегодня: 0 из 3</div>
+          </div>
+          <div class="card">
+            <div class="sumrow">
+              <div class="sumst"><b id="sumMeals">0</b><span>приёмов пищи</span></div>
+              <div class="sumst"><b id="sumScore">—</b><span>баланс сегодня</span></div>
+              <div class="sumst"><b id="sumWeek">—</b><span>за неделю</span></div>
+            </div>
+            <div class="kcalline">
+              <div class="kt"><span>Примерно за сегодня</span><b id="kcalToday">0 из 0 ккал</b></div>
+              <div class="ktrack"><div class="kfill" id="kcalFill" style="width:0%"></div></div>
+              <div class="kt" style="margin-top:6px"><span style="font-weight:500">Ориентир, а не отчёт — главное держать пропорции</span></div>
+            </div>
+            <div class="macrodiary" id="macroDiary"></div>
+            <div class="hint"><svg class="ic oic" width="17" height="17"><use href="#i-spark"/></svg><span id="homeHint">—</span></div>
+          </div>
+          <div class="seclbl">Идеи, что приготовить<span class="probadge" id="recipeBadge">PRO</span></div>
+          <div class="card recipeteaser" data-act="openrecipes">
+            <span class="prodic" style="color:var(--acc);flex:none"><svg class="ic" width="19" height="19"><use href="#i-spark"/></svg></span>
+            <div style="flex:1;min-width:0"><div id="recipeTeaserTxt" style="font-size:14px;font-weight:600">—</div></div>
+            <svg class="ic" width="17" height="17" style="color:var(--sub);flex:none"><use href="#i-chevr"/></svg>
+          </div>
+          <div class="seclbl">Еженедельный разбор<span class="probadge" id="coachBadge">PRO</span></div>
+          <div class="card">
+            <div class="coach" id="coachText">—</div>
+          </div>
+        </div>
+
+        <!-- ИСТОРИЯ -->
+        <div class="scr" id="av-history" style="padding:0 0 110px">
+          <div class="appttl">История</div>
+          <div class="htabs" id="histSeg" style="margin-top:14px">
+            <span class="segthumb" id="histThumb"></span>
+            <button class="segb sel" data-act="htab" data-h="feed">Лента</button>
+            <button class="segb" data-act="htab" data-h="charts">Баланс</button>
+            <button class="segb" data-act="htab" data-h="weight">Вес</button>
+          </div>
+          <div id="hFeed"></div>
+          <div id="hCharts" style="display:none">
+            <div class="rangeseg" id="rangeSeg">
+              <button class="rbtn sel" data-act="range" data-r="w">Неделя</button>
+              <button class="rbtn" data-act="range" data-r="m">Месяц</button>
+              <button class="rbtn" data-act="range" data-r="3">3 мес<span class="probadge" style="margin-left:2px">PRO</span></button>
+              <button class="rbtn" data-act="range" data-r="12">Год<span class="probadge" style="margin-left:2px">PRO</span></button>
+            </div>
+            <div class="card" style="margin-top:10px">
+              <div style="font-size:14px;font-weight:700;display:flex;justify-content:space-between;align-items:center">
+                <span id="chartTitle">Баланс за неделю</span><span class="trend" id="chartTrend">—</span>
+              </div>
+              <div class="bars" id="weekBars"></div>
+              <div class="daydetail" id="dayDetail">Нажмите на день, чтобы посмотреть подробности</div>
+            </div>
+            <div class="card" style="margin-top:12px">
+              <div style="font-size:14px;font-weight:700;margin-bottom:4px">Частые продукты</div>
+              <div id="freqList"></div>
+            </div>
+          </div>
+          <div id="hWeight" style="display:none">
+            <div class="card">
+              <div style="display:flex;justify-content:space-between;align-items:baseline">
+                <div><span class="wnow" id="weightNow">—</span><span class="wunit"> кг</span></div>
+                <button class="btn pri" style="width:auto;padding:9px 16px;font-size:13.5px" data-act="addweight">+ Добавить вес</button>
+              </div>
+              <div class="wtrends" id="weightTrends">—</div>
+              <div id="weightChart" style="margin-top:14px"></div>
+            </div>
+            <div class="wminicards">
+              <div class="wminicard"><div class="wmlbl">ИМТ</div><div class="wmval" id="bmiVal">—</div><div class="wmsub" id="bmiTag">—</div></div>
+              <div class="wminicard" id="forecastCard" data-act="openforecast"><div class="wmlbl">Прогноз<span class="probadge" id="forecastBadge">PRO</span></div><div class="wmval" id="forecastVal">—</div><div class="wmsub" id="forecastSub">—</div></div>
+            </div>
+            <div class="seclbl" style="margin-top:20px">Записи</div>
+            <div id="weightList"></div>
+          </div>
+        </div>
+
+        <!-- РЕЦЕПТЫ -->
+        <div class="scr" id="av-recipes" style="padding:0 0 110px">
+          <div class="appttl" id="recipesGreet">Добрый день</div>
+          <div class="appsub">Идеи под ваш баланс тарелки</div>
+          <div class="rangeseg" id="recipeFilter" style="margin-top:14px">
+            <button class="rbtn sel" data-act="rfilter" data-f="all">Все</button>
+            <button class="rbtn" data-act="rfilter" data-f="veg">Овощи</button>
+            <button class="rbtn" data-act="rfilter" data-f="fruit">Фрукты</button>
+            <button class="rbtn" data-act="rfilter" data-f="grain">Злаки</button>
+            <button class="rbtn" data-act="rfilter" data-f="prot">Белок</button>
+          </div>
+          <div id="recipesFull" style="margin-top:14px"></div>
+        </div>
+
+        <!-- ПРОФИЛЬ -->
+        <div class="scr" id="av-profile" style="padding:0 0 110px">
+          <div class="appttl">Профиль</div>
+          <div class="appsub" id="profSummary">—</div>
+          <div style="height:18px"></div>
+          <div class="prow" data-act="editdata"><svg class="ic oic" width="21" height="21"><use href="#i-pencil"/></svg>Мои данные<span class="pv" id="pvData">—<svg class="ic" width="15" height="15"><use href="#i-chevr"/></svg></span></div>
+          <div class="prow"><svg class="ic oic" width="21" height="21"><use href="#i-bell"/></svg>Напоминания<span class="pv"><span class="probadge" id="notifBadge">PRO</span></span><span class="toggle on" data-act="notif" id="tglNotif"></span></div>
+          <div class="notiftimes show" id="notifTimes">
+            <button class="chip sel" data-act="ntime" data-t="9:00">Утро 9:00</button>
+            <button class="chip" data-act="ntime" data-t="14:00">День 14:00</button>
+            <button class="chip sel" data-act="ntime" data-t="19:30">Вечер 19:30</button>
+          </div>
+          <div class="prow"><svg class="ic oic" width="21" height="21"><use href="#i-heart"/></svg>Apple Health<span class="toggle" data-act="toggle" id="tglHealth"></span></div>
+          <div class="prow" data-act="export"><svg class="ic oic" width="21" height="21"><use href="#i-export"/></svg>Экспорт истории<span class="pv"><span class="probadge" id="expBadge">PRO</span></span></div>
+          <div class="prow"><svg class="ic oic" width="21" height="21" id="themeIcon"><use href="#i-moon"/></svg>Тёмная тема<span class="toggle" data-act="theme" id="tglTheme"></span></div>
+          <div class="subcard" id="subCard" data-act="openpro">
+            <span class="subic" id="subIcon"><svg class="ic" width="20" height="20"><use href="#i-sliders"/></svg></span>
+            <div class="submeta">
+              <div class="subttl" id="subTitle">Бесплатный план</div>
+              <div class="subsub" id="subSub">Откройте больше возможностей с Pro</div>
+            </div>
+            <svg class="ic" width="16" height="16" style="color:var(--sub);flex:none"><use href="#i-chevr"/></svg>
+          </div>
+          <div class="footnote">Концепт-демо. Данные живут, пока открыта страница.<br>Распознавание фото — симуляция vision-модели.</div>
+        </div>
+      </div>
+
+      <div class="tabbar">
+        <button class="tab on" data-act="tab" data-v="home"><svg class="ic oic" width="21" height="21"><use href="#i-plate"/></svg>Главная</button>
+        <button class="tab" data-act="tab" data-v="history"><svg class="ic oic" width="21" height="21"><use href="#i-hist"/></svg>История</button>
+        <button class="tab" data-act="tab" data-v="recipes"><svg class="ic oic" width="21" height="21"><use href="#i-spark"/></svg>Рецепты</button>
+        <button class="tab" data-act="tab" data-v="profile"><svg class="ic oic" width="21" height="21"><use href="#i-user"/></svg>Профиль</button>
+      </div>
+    </div>
+
+    <!-- ═════ КАМЕРА ═════ -->
+    <div class="layer" id="l-camera">
+      <div class="camview">
+        <video id="camVideo" autoplay playsinline muted></video>
+        <div class="bracket b-tl"></div><div class="bracket b-tr"></div>
+        <div class="bracket b-bl"></div><div class="bracket b-br"></div>
+        <div class="camtop"><button class="camx" data-act="closecam"><svg class="ic" width="19" height="19"><use href="#i-x"/></svg></button></div>
+        <div class="camhint" id="camHint">Расположите тарелку в кадре целиком</div>
+      </div>
+      <div class="cambar"><button class="shutter" data-act="shutter"><i></i></button></div>
+      <div class="flash" id="flash"></div>
+    </div>
+
+    <!-- ═════ АНАЛИЗ ═════ -->
+    <div class="layer" id="l-analyzing" style="align-items:center;justify-content:center;text-align:center;padding:0 44px;z-index:85">
+      <div class="anscan">
+        <svg class="ic" width="34" height="34" style="color:var(--acc)"><use href="#i-plate"/></svg>
+      </div>
+      <div style="font-size:17px;font-weight:700;margin-top:20px">Анализируем снимок</div>
+      <div class="anpct" id="anPct">0%</div>
+      <div class="ansteps">
+        <div class="anstep" id="an1"><span class="aic"><svg class="ic" width="13" height="13"><use href="#i-check"/></svg></span>Распознаём продукты</div>
+        <div class="anstep" id="an2"><span class="aic"><svg class="ic" width="13" height="13"><use href="#i-check"/></svg></span>Оцениваем пропорции</div>
+        <div class="anstep" id="an3"><span class="aic"><svg class="ic" width="13" height="13"><use href="#i-check"/></svg></span>Готовим рекомендации</div>
+      </div>
+    </div>
+
+    <!-- ═════ РЕЗУЛЬТАТ ═════ -->
+    <div class="layer" id="l-result">
+      <div class="resscroll">
+        <div class="reshead">
+          <div class="resttl" id="resName">Приём пищи</div>
+          <button class="camx" style="background:var(--card);color:var(--sub);border:1px solid var(--line)" data-act="closeres"><svg class="ic" width="18" height="18"><use href="#i-x"/></svg></button>
+        </div>
+        <div class="restime" id="resMeta">—</div>
+        <span class="srcbadge" id="srcBadge" style="display:none"></span>
+        <div class="scorewrap" id="tutScoreTarget">
+          <div class="scorering">
+            <svg width="132" height="132" viewBox="0 0 132 132">
+              <circle class="srt" cx="66" cy="66" r="58"/>
+              <circle class="srf" id="scoreArc" cx="66" cy="66" r="58" stroke-dasharray="364.4" stroke-dashoffset="364.4"/>
+            </svg>
+            <div style="text-align:center"><div class="srnum" id="resScore">0</div><div class="srsub">баланс из 100</div></div>
+          </div>
+          <div class="scoreleg" id="resLeg"></div>
+        </div>
+        <div class="scoretagline">
+          <div class="scoretag" id="resTag">—</div>
+          <div class="kcaltag" id="resKcal">—</div>
+        </div>
+        <div class="resreact" id="resReact">—</div>
+        <div class="rec" id="resRec">—</div>
+        <div class="res100" id="res100hint">Идеал для 100: 30% овощи · 20% фрукты · 25% злаки · 25% белок</div>
+
+        <div class="seclbl" id="suggestLbl" style="margin-top:22px">Что улучшит тарелку</div>
+        <div id="suggestBox"></div>
+
+        <div class="seclbl" style="margin-top:24px">Распознанные продукты</div>
+        <div class="prods" id="resProds"></div>
+        <div class="addprod" id="resAdd"></div>
+
+        <div class="seclbl" style="margin-top:24px">Микронутриенты<span class="probadge" id="microBadge">PRO</span></div>
+        <div class="card">
+          <div class="microlist" id="microList"></div>
+          <div class="coach locked" id="microLocked">Витамины, минералы и клетчатка по каждому приёму пищи — в Pro.</div>
+        </div>
+        <div style="height:8px"></div>
+      </div>
+      <div class="resfoot" id="resFoot">
+        <button class="btn sec" data-act="retake" style="flex:0 0 40%">Переснять</button>
+        <button class="btn pri" id="tutSaveTarget" data-act="savemeal" style="flex:1">Сохранить приём пищи</button>
+      </div>
+    </div>
+
+    <!-- ═════ РЕЦЕПТ ═════ -->
+    <div class="layer" id="l-recipe">
+      <div class="resscroll">
+        <div class="reshead">
+          <div class="resttl" id="recipeTitle">Рецепт</div>
+          <button class="camx" style="background:var(--card);color:var(--sub);border:1px solid var(--line)" data-act="closerecipe"><svg class="ic" width="18" height="18"><use href="#i-x"/></svg></button>
+        </div>
+        <div class="recipehero">
+          <span class="recipeheroic" id="recipeIcon"></span>
+          <span class="restime" id="recipeMeta" style="margin:0">—</span>
+        </div>
+        <div class="seclbl" style="margin-top:22px">Ингредиенты</div>
+        <div class="card"><div id="recipeIng"></div></div>
+        <div class="seclbl" style="margin-top:22px">Приготовление</div>
+        <div id="recipeSteps"></div>
+        <div class="recipetip" id="recipeTip"></div>
+        <div style="height:8px"></div>
+      </div>
+    </div>
+
+    <!-- ═════ PRO ═════ -->
+    <div class="layer" id="l-pro">
+      <div class="proscroll">
+        <div class="prohero">
+          <div class="prheroicon"><svg class="ic" width="26" height="26"><use href="#i-spark"/></svg></div>
+        </div>
+        <div class="reshead" style="margin-top:14px">
+          <div class="prottl">Тарелка Pro</div>
+          <button class="camx" style="background:var(--card);color:var(--sub);border:1px solid var(--line)" data-act="closepro"><svg class="ic" width="18" height="18"><use href="#i-x"/></svg></button>
+        </div>
+        <div class="prosub" id="proReason">Спокойное сравнение — без таймеров и мигающих скидок.</div>
+        <div class="cmptbl">
+          <div class="cmphead"><span>Возможности</span><span style="text-align:center">Free</span><span style="text-align:center">Pro</span></div>
+          <div class="cmprow"><span class="cf">Распознаваний в день</span><span class="cm txt">3</span><span class="cm"><svg class="ic" width="18" height="18"><use href="#i-inf"/></svg></span></div>
+          <div class="cmprow"><span class="cf">Баланс тарелки и советы</span><span class="cm"><svg class="ic" width="17" height="17"><use href="#i-check"/></svg></span><span class="cm"><svg class="ic" width="17" height="17"><use href="#i-check"/></svg></span></div>
+          <div class="cmprow"><span class="cf">Микронутриенты</span><span class="cm no"><svg class="ic" width="16" height="16"><use href="#i-minus"/></svg></span><span class="cm"><svg class="ic" width="17" height="17"><use href="#i-check"/></svg></span></div>
+          <div class="cmprow"><span class="cf">ИИ-коуч: недельный разбор</span><span class="cm no"><svg class="ic" width="16" height="16"><use href="#i-minus"/></svg></span><span class="cm"><svg class="ic" width="17" height="17"><use href="#i-check"/></svg></span></div>
+          <div class="cmprow"><span class="cf">Тренды 3 / 12 месяцев</span><span class="cm no"><svg class="ic" width="16" height="16"><use href="#i-minus"/></svg></span><span class="cm"><svg class="ic" width="17" height="17"><use href="#i-check"/></svg></span></div>
+          <div class="cmprow"><span class="cf">Экспорт и Apple Health</span><span class="cm no"><svg class="ic" width="16" height="16"><use href="#i-minus"/></svg></span><span class="cm"><svg class="ic" width="17" height="17"><use href="#i-check"/></svg></span></div>
+          <div class="cmprow"><span class="cf">Идеи и рецепты под баланс</span><span class="cm no"><svg class="ic" width="16" height="16"><use href="#i-minus"/></svg></span><span class="cm"><svg class="ic" width="17" height="17"><use href="#i-check"/></svg></span></div>
+          <div class="cmprow"><span class="cf">Гибкие напоминания</span><span class="cm no"><svg class="ic" width="16" height="16"><use href="#i-minus"/></svg></span><span class="cm"><svg class="ic" width="17" height="17"><use href="#i-check"/></svg></span></div>
+          <div class="cmprow"><span class="cf">Прогноз веса</span><span class="cm no"><svg class="ic" width="16" height="16"><use href="#i-minus"/></svg></span><span class="cm"><svg class="ic" width="17" height="17"><use href="#i-check"/></svg></span></div>
+          <div class="cmprow"><span class="cf">Синхронизация между устройствами</span><span class="cm no"><svg class="ic" width="16" height="16"><use href="#i-minus"/></svg></span><span class="cm"><svg class="ic" width="17" height="17"><use href="#i-check"/></svg></span></div>
+          <div class="cmprow"><span class="cf">Точность распознавания</span><span class="cm txt">базовая</span><span class="cm txt">выше</span></div>
+        </div>
+        <div class="pricecard" style="margin-top:20px">
+          <b id="proPriceHead">7 дней бесплатно</b>
+          <span id="proPriceSub">Далее €29.99 в год. Отмена в любой момент — если отменить в пробный период, ничего не спишется.</span>
+        </div>
+        <div style="margin-top:16px;display:flex;flex-direction:column;gap:6px">
+          <button class="btn pri" id="proCta" data-act="trypro">Попробовать 7 дней бесплатно</button>
+          <button class="link" data-act="closepro">Продолжить с бесплатной версией</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- шторка оплаты -->
+    <div class="dim" id="dim" data-act="closesheet"></div>
+    <div class="sheet" id="paysheet">
+      <div class="sheetttl" id="paySheetTtl">Тарелка Pro — год</div>
+      <div class="sheetsub" id="paySheetSub">7 дней бесплатно, далее €29.99 в год. Сегодня — €0.00.</div>
+      <div class="paystage">
+        <div class="pst on" id="pstBtn"><button class="btn sec" style="display:flex;align-items:center;justify-content:center;gap:9px" data-act="confirmpay"><svg class="ic" width="21" height="21" style="color:var(--acc)"><use href="#i-faceid"/></svg>Подтвердить через Face ID</button></div>
+        <div class="pst" id="pstFace"><svg class="ic scan" width="52" height="52" style="color:var(--acc)"><use href="#i-faceid"/></svg><span class="lbl">Face ID</span></div>
+        <div class="pst" id="pstDone"><div class="donec pop"><svg class="ic" width="22" height="22"><use href="#i-check"/></svg></div><span class="lbl">Готово</span></div>
+      </div>
+      <div class="psnote">Симуляция оплаты — списаний нет</div>
+    </div>
+
+    <!-- шторка «Мои данные» -->
+    <div class="sheet" id="datasheet">
+      <div class="sheetttl">Мои данные</div>
+      <div class="sheetsub">Норма пересчитается автоматически.</div>
+      <div id="dataBody"></div>
+      <button class="btn pri" style="margin-top:8px" data-act="savedata">Сохранить</button>
+    </div>
+
+    <div class="sheet" id="weightsheet">
+      <div class="sheetttl" id="wsheetTtl">Изменить вес</div>
+      <div class="sheetsub" id="wsheetDate">Сегодня</div>
+      <div class="frow" data-frow="wval" style="margin-top:6px"><span class="fl">Вес</span><span class="step">
+        <button class="stepb" data-act="wdec">−</button>
+        <span class="stepv" id="sv-wval" style="min-width:90px"><span class="rollwrap"><span class="roll" id="wvalTxt">76.0</span></span> <span class="unit">кг</span></span>
+        <button class="stepb" data-act="winc">+</button>
+      </span></div>
+      <button class="btn pri" style="margin-top:14px" data-act="savew">Сохранить</button>
+      <button class="btn sec" style="margin-top:8px" id="wdelBtn" data-act="delw">Удалить запись</button>
+    </div>
+
+    <div class="toast" id="toast"><span id="toastMsg"></span><button class="toastbtn" id="toastAct" style="display:none" data-act="undosave">Отменить</button></div>
+
+    <!-- ═════ ТУТОРИАЛ (авто-слайдшоу) ═════ -->
+    <div class="tut" id="tut" data-act="tuttap">
+      <div class="tutcard">
+        <div class="tutprog" id="tutProg"></div>
+        <div class="tuticon" id="tutIcon"></div>
+        <div class="tutttl" id="tutTitle">—</div>
+        <div class="tuttxt" id="tutText">—</div>
+        <div class="tutdots" id="tutDots"></div>
+        <button class="tutskip" data-act="tutskip">Пропустить</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="caption"><b>Тарелка</b> · v2 — живые данные, анимации, полный флоу по спеку</div>
+
+<script>
+(function(){
+"use strict";
+function $(id){return document.getElementById(id)}
+var scr=$("screen");
+
+/* ═══════ данные ═══════ */
+var TARGETS={veg:30,fruit:20,grain:25,prot:25};
+var KCAL100={veg:35,fruit:60,grain:130,prot:160,other:300};
+var MACRO100={veg:{p:2,f:.3,c:6},fruit:{p:.5,f:.2,c:14},grain:{p:3,f:1,c:27},prot:{p:20,f:8,c:2},other:{p:3,f:15,c:10}};
+function macroEstimate(products){
+  var tot={p:0,f:0,c:0};
+  for(var i=0;i<products.length;i++){
+    var p=products[i],m=MACRO100[p.cat]||MACRO100.other;
+    tot.p+=p.g*m.p/100;tot.f+=p.g*m.f/100;tot.c+=p.g*m.c/100;
+  }
+  return{prot:Math.round(tot.p),fat:Math.round(tot.f),carb:Math.round(tot.c)};
+}
+var CATMETA={
+  veg:{name:"Овощи",col:"#6f9a72",ic:"i-leaf"},
+  fruit:{name:"Фрукты",col:"#c08d64",ic:"i-fruit"},
+  grain:{name:"Цельнозерновые",col:"#c9ab6b",ic:"i-grain"},
+  prot:{name:"Белок",col:"#a8766b",ic:"i-fish"},
+  other:{name:"Прочее",col:"#9a9a92",ic:"i-drop"}
+};
+var SCENARIOS=[
+  {name:"Паста с курицей",products:[
+    ["Паста","grain",180],["Куриное филе","prot",140],["Томаты и зелень","veg",60],["Оливковое масло","other",10]]},
+  {name:"Боул с лососем",products:[
+    ["Лосось","prot",120],["Киноа","grain",110],["Овощи гриль","veg",160],["Авокадо","fruit",60]]},
+  {name:"Овсянка с ягодами",products:[
+    ["Овсянка","grain",160],["Ягоды","fruit",90],["Греческий йогурт","prot",100],["Орехи","other",20]]},
+  {name:"Бургер с картофелем",products:[
+    ["Булочка","grain",90],["Котлета","prot",110],["Картофель фри","grain",130],["Салат и томат","veg",30]]}
+];
+var ADDABLE=[["Овощи","veg",100],["Фрукты","fruit",100],["Курица","prot",100],["Рис","grain",100],
+  ["Рыба","prot",120],["Яйцо","prot",55],["Хлеб","grain",60],["Йогурт","other",120],["Орехи","other",30],["Масло","other",10]];
+var SUGGEST_ADD={
+  veg:[["Брокколи","veg",100],["Салат","veg",70],["Огурец","veg",90]],
+  fruit:[["Яблоко","fruit",120],["Банан","fruit",100],["Апельсин","fruit",130]],
+  grain:[["Рис","grain",100],["Гречка","grain",100],["Хлеб цельнозерновой","grain",60]],
+  prot:[["Яйцо","prot",55],["Куриное филе","prot",100],["Творог","prot",100]]
+};
+var PRODICON={
+  "Куриное филе":"i-drumstick","Курица":"i-drumstick","Котлета":"i-drumstick",
+  "Лосось":"i-fish","Рыба":"i-fish",
+  "Яйцо":"i-egg","Греческий йогурт":"i-drop","Йогурт":"i-drop",
+  "Орехи":"i-nut",
+  "Паста":"i-grain","Рис":"i-grain","Овсянка":"i-grain","Киноа":"i-grain","Гречка":"i-grain",
+  "Булочка":"i-grain","Хлеб":"i-grain","Картофель фри":"i-grain",
+  "Оливковое масло":"i-drop","Масло":"i-drop",
+  "Томаты и зелень":"i-leaf","Овощи":"i-leaf","Овощи гриль":"i-leaf","Салат и томат":"i-leaf",
+  "Авокадо":"i-fruit","Ягоды":"i-fruit","Фрукты":"i-fruit"
+};
+var RECIPES={
+  veg:[
+    {n:"Овощной боул с нутом",d:"Много овощей и клетчатки, готовится 15 минут.",kcal:410,ic:"i-leaf",time:15,servings:1,
+     ing:["Нут отварной — 150 г","Огурец — 1 шт","Помидоры черри — 6 шт","Авокадо — ½ шт","Красный лук — ¼ шт","Оливковое масло — 1 ст. л.","Лимонный сок — 1 ч. л.","Соль, перец — по вкусу"],
+     steps:["Слить и промыть нут, обсушить бумажным полотенцем.","Нарезать огурец и помидоры черри кубиками, лук — тонкими полукольцами.","Авокадо нарезать дольками.","Выложить всё слоями в миску: нут, овощи, авокадо.","Заправить маслом и лимонным соком, посолить и поперчить перед подачей."],
+     tip:"Совет: добавьте лимонный сок перед подачей — ярче вкус."},
+    {n:"Салат с печёными овощами",d:"Тыква, перец, руккола — закрывает дневную норму овощей.",kcal:320,ic:"i-leaf",time:35,servings:2,
+     ing:["Тыква — 250 г","Болгарский перец — 2 шт","Руккола — 60 г","Оливковое масло — 2 ст. л.","Бальзамический уксус — 1 ст. л.","Тыквенные семечки — 1 ст. л.","Соль, перец — по вкусу"],
+     steps:["Разогреть духовку до 200°C.","Тыкву и перец нарезать крупными дольками, выложить на противень.","Сбрызнуть маслом, посолить, запекать 20–25 минут до мягкости.","Дать овощам немного остыть.","Смешать с рукколой, заправить бальзамическим уксусом, посыпать семечками."],
+     tip:"Совет: запекайте овощи при 200°C 20 минут для карамелизации."},
+    {n:"Овощной суп-пюре",d:"Сезонные овощи, немного оливкового масла.",kcal:260,ic:"i-leaf",time:30,servings:2,
+     ing:["Кабачок — 1 шт","Морковь — 1 шт","Лук репчатый — 1 шт","Овощной бульон — 500 мл","Оливковое масло — 1 ст. л.","Чеснок — 1 зубчик","Соль, перец — по вкусу"],
+     steps:["Лук и чеснок мелко нарезать, обжарить на масле до прозрачности.","Морковь и кабачок нарезать кубиками, добавить к луку.","Влить бульон, довести до кипения и варить 15 минут до мягкости овощей.","Пробить блендером до однородности.","Посолить, поперчить, подавать горячим."],
+     tip:"Совет: взбивайте блендером сразу горячим — текстура нежнее."}
+  ],
+  fruit:[
+    {n:"Творог с ягодами и мёдом",d:"Лёгкий перекус с фруктами и белком.",kcal:280,ic:"i-fruit",time:5,servings:1,
+     ing:["Творог 5% — 150 г","Ягоды (свежие или замороженные) — 100 г","Мёд — 1 ч. л.","Орехи — щепотка"],
+     steps:["Выложить творог в миску, слегка размять вилкой.","Добавить ягоды сверху.","Полить мёдом.","Посыпать орехами перед подачей."],
+     tip:"Совет: замороженные ягоды работают не хуже свежих."},
+    {n:"Смузи манго-шпинат",d:"Фрукты плюс зелень в одном стакане.",kcal:220,ic:"i-fruit",time:5,servings:1,
+     ing:["Манго — ½ шт","Шпинат — 30 г","Банан — ½ шт","Йогурт натуральный — 100 мл","Вода — 50 мл"],
+     steps:["Манго и банан очистить и нарезать кусочками.","Сложить все ингредиенты в блендер.","Взбить до однородности 30–40 секунд.","Перелить в стакан и подавать сразу."],
+     tip:"Совет: добавьте банан для более густой текстуры."},
+    {n:"Фруктовый салат с йогуртом",d:"Быстрый вариант на завтрак или перекус.",kcal:240,ic:"i-fruit",time:10,servings:2,
+     ing:["Яблоко — 1 шт","Груша — 1 шт","Киви — 1 шт","Виноград — горсть","Йогурт натуральный — 150 мл","Лайм — ½ шт"],
+     steps:["Все фрукты нарезать кубиками одинакового размера.","Сложить в миску, сбрызнуть соком лайма.","Аккуратно перемешать.","Полить йогуртом перед подачей."],
+     tip:"Совет: сбрызните лаймом, чтобы фрукты не темнели."}
+  ],
+  grain:[
+    {n:"Киноа с овощами гриль",d:"Цельнозерновые без лишнего жира.",kcal:380,ic:"i-grain",time:25,servings:2,
+     ing:["Киноа — 150 г","Цукини — 1 шт","Баклажан — ½ шт","Болгарский перец — 1 шт","Оливковое масло — 1 ст. л.","Лимонный сок — 1 ч. л.","Соль, перец — по вкусу"],
+     steps:["Промыть киноа под холодной водой.","Отварить киноа в подсоленной воде 12–15 минут, откинуть на сито.","Овощи нарезать крупно, обжарить на гриле или сковороде 8–10 минут.","Смешать киноа с овощами.","Заправить маслом и лимонным соком."],
+     tip:"Совет: промойте киноа перед варкой — уйдёт горчинка."},
+    {n:"Гречка с грибами",d:"Простой гарнир с высоким содержанием клетчатки.",kcal:340,ic:"i-grain",time:25,servings:2,
+     ing:["Гречка — 150 г","Шампиньоны — 200 г","Лук репчатый — 1 шт","Растительное масло — 1 ст. л.","Соль, перец — по вкусу"],
+     steps:["Гречку отварить согласно инструкции на упаковке (обычно 15 минут).","Лук нарезать полукольцами, грибы — пластинками.","Обжарить лук до золотистого цвета, добавить грибы.","Жарить грибы с луком 7–8 минут до готовности.","Смешать с гречкой, посолить и поперчить."],
+     tip:"Совет: обжарьте грибы отдельно для более яркого вкуса."},
+    {n:"Овсянка с орехами",d:"Долгая энергия на утро без сахара.",kcal:300,ic:"i-grain",time:10,servings:1,
+     ing:["Овсяные хлопья — 50 г","Молоко или вода — 200 мл","Орехи (грецкие или миндаль) — 15 г","Корица — щепотка","Банан — ½ шт (по желанию)"],
+     steps:["Залить овсяные хлопья молоком или водой.","Варить на среднем огне 5–7 минут, помешивая.","Добавить корицу за минуту до готовности.","Выложить в тарелку, посыпать орехами и нарезанным бананом."],
+     tip:"Совет: замочите овсянку на ночь для кремовой текстуры."}
+  ],
+  prot:[
+    {n:"Лосось с овощами на пару",d:"Много белка, мягкий баланс жиров.",kcal:430,ic:"i-fish",time:20,servings:1,
+     ing:["Филе лосося — 150 г","Брокколи — 100 г","Морковь — 1 шт","Лимон — ½ шт","Оливковое масло — 1 ч. л.","Соль, перец — по вкусу"],
+     steps:["Приправить лосось солью, перцем и соком лимона.","Брокколи разобрать на соцветия, морковь нарезать кружочками.","Готовить лосось и овощи на пару 10–12 минут.","Сбрызнуть маслом перед подачей."],
+     tip:"Совет: не пережаривайте — 4 минуты на сторону достаточно."},
+    {n:"Куриная грудка с чечевицей",d:"Двойной источник белка на растительной основе.",kcal:400,ic:"i-fish",time:30,servings:2,
+     ing:["Куриная грудка — 250 г","Чечевица — 150 г","Лук репчатый — 1 шт","Чеснок — 1 зубчик","Оливковое масло — 1 ст. л.","Специи (паприка, тмин) — по вкусу"],
+     steps:["Замариновать курицу со специями хотя бы на 20 минут.","Чечевицу отварить согласно инструкции на упаковке.","Обжарить лук и чеснок до мягкости.","Обжарить курицу до готовности, 6–7 минут с каждой стороны.","Нарезать курицу, подавать с чечевицей и луком."],
+     tip:"Совет: замаринуйте курицу заранее хотя бы на 20 минут."},
+    {n:"Омлет с индейкой",d:"Быстрый белковый завтрак.",kcal:320,ic:"i-fish",time:12,servings:1,
+     ing:["Яйца — 3 шт","Филе индейки отварное — 80 г","Молоко — 2 ст. л.","Зелень — по вкусу","Соль, перец — по вкусу"],
+     steps:["Взбить яйца с молоком, посолить и поперчить.","Индейку нарезать мелкими кубиками.","Вылить яйца на разогретую сковороду с антипригарным покрытием.","Добавить индейку, готовить на среднем огне 4–5 минут под крышкой.","Посыпать зеленью перед подачей."],
+     tip:"Совет: готовьте на среднем огне — омлет останется нежным."}
+  ]
+};
+var FREE_RECIPES=[{cat:"veg",idx:0},{cat:"fruit",idx:0},{cat:"prot",idx:0}];
+var MICRO100={
+  veg:{fiber:2,vitc:15,iron:4,calcium:3},
+  fruit:{fiber:1.5,vitc:25,iron:1,calcium:1},
+  grain:{fiber:2,vitc:0,iron:5,calcium:2},
+  prot:{fiber:0,vitc:0,iron:8,calcium:4},
+  other:{fiber:.5,vitc:2,iron:2,calcium:6}
+};
+function microEstimate(products){
+  var tot={fiber:0,vitc:0,iron:0,calcium:0};
+  for(var i=0;i<products.length;i++){
+    var p=products[i],m=MICRO100[p.cat]||MICRO100.other;
+    tot.fiber+=p.g*m.fiber/100;tot.vitc+=p.g*m.vitc/100;
+    tot.iron+=p.g*m.iron/100;tot.calcium+=p.g*m.calcium/100;
+  }
+  var pct=function(v){return Math.max(0,Math.min(100,Math.round(v)))};
+  return[
+    ["Клетчатка",Math.round(tot.fiber)+" г из 30",pct(tot.fiber/30*100)],
+    ["Витамин C",pct(tot.vitc)+"%",pct(tot.vitc)],
+    ["Железо",pct(tot.iron)+"%",pct(tot.iron)],
+    ["Кальций",pct(tot.calcium)+"%",pct(tot.calcium)]
+  ];
+}
+var ONB=[
+  {type:"opts",title:"Какая у вас основная цель?",sub:"Это определит вашу персональную норму.",key:"goal",
+   opts:[["Похудение","i-leaf"],["Поддержание веса","i-plate"],["Набор мышечной массы","i-fish"],["Просто наладить питание","i-heart"]]},
+  {type:"form",title:"Расскажите о себе",sub:"Нужно для расчёта нормы калорий и БЖУ."},
+  {type:"loss",title:"Сколько кг хотите сбросить?",sub:"Поможет точнее настроить норму калорий.",cond:function(){return P.profile.goal===0}},
+  {type:"opts",title:"Уровень активности",sub:"В среднем за последние пару месяцев.",key:"activity",
+   opts:[["Сидячий образ жизни","i-user"],["Лёгкая активность","i-user"],["Умеренная активность","i-user"],["Высокая активность","i-user"]],
+   subs:["почти без движения","1–3 тренировки в неделю","3–5 тренировок в неделю","6+ тренировок или физическая работа"]},
+  {type:"multi",title:"Есть ли пищевые ограничения?",sub:"Можно выбрать несколько.",key:"restr",
+   opts:[["Нет ограничений","i-check"],["Вегетарианство","i-leaf"],["Веганство","i-leaf"],["Без глютена","i-grain"],["Аллергии","i-drop"]]},
+  {type:"opts",title:"Как часто вы готовите дома?",sub:"Подстроим советы под ваш ритм.",key:"cook",
+   opts:[["Почти всегда ем вне дома","i-user"],["Примерно поровну","i-plate"],["В основном готовлю сам","i-heart"]]},
+  {type:"opts",title:"Пробовали приложения для трекинга еды?",sub:"И почему они не прижились.",key:"past",
+   opts:[["Слишком сложно считать калории","i-x"],["Надоело","i-hist"],["Не видел результата","i-chart"],["Не пробовал","i-plus"]]},
+  {type:"building"},
+  {type:"result"}
+];
+var PAST_MSG=[
+  "Здесь не нужно считать калории. Достаточно фотографии — приложение само оценит пропорции тарелки.",
+  "Здесь всё занимает одну фотографию в приём пищи. Никаких дневников и взвешиваний.",
+  "Метод тарелки работает за счёт стабильных пропорций — прогресс станет видно на графиках уже через неделю.",
+  "Начнём с простого: половина тарелки — овощи и фрукты. Остальному научит приложение."
+];
+
+/* состояние */
+var P={
+  pro:false,theme:"light",scansToday:0,scanLimit:3,retakesToday:0,retakeLimit:2,tutorialSeen:false,payPlan:"y",
+  profile:{goal:-1,sex:"m",age:24,height:180,weight:76,activity:-1,restr:[],cook:-1,past:-1,targetLoss:5},
+  norm:null,
+  notifTimes:["9:00","19:30"],
+  history:[
+    mkEntry("Боул с лососем",1,"Вчера","13:40","yd"),
+    mkEntry("Овсянка с ягодами",2,"Вчера","09:10","yd"),
+    mkEntry("Паста с курицей",0,"Сб","19:20","old"),
+    mkEntry("Бургер с картофелем",3,"Сб","14:05","old"),
+    mkEntry("Боул с лососем",1,"Пт","13:15","old")
+  ],
+  week:[{d:"Пн",v:68},{d:"Вт",v:74},{d:"Ср",v:71},{d:"Чт",v:66},{d:"Пт",v:79},{d:"Сб",v:62},{d:"Вс",v:null}],
+  lastWeekAvg:69,
+  weights:[]
+};
+var S={ob:0,obSel:-1,scenario:0,cur:null,readonly:false,htab:"feed",payBusy:false,recipeFilter:"all",
+  pendingRetake:false,camStream:null,editWeightDate:null,editWeightVal:70,
+  lastSaved:null,edit:{weight:76,height:180,goal:1}};
+
+/* ═══════ расчёты (тестируемые) ═══════ */
+function shares(products){
+  var t=0,acc={veg:0,fruit:0,grain:0,prot:0};
+  for(var i=0;i<products.length;i++){
+    var p=products[i];
+    if(acc.hasOwnProperty(p.cat)){acc[p.cat]+=p.g;t+=p.g;}
+  }
+  var out={};
+  for(var k in acc)out[k]=t?Math.round(acc[k]/t*100):0;
+  var sum=out.veg+out.fruit+out.grain+out.prot;
+  if(t&&sum!==100)out.veg+=100-sum;
+  return out;
+}
+function score(sh){
+  var dev=Math.abs(sh.veg-TARGETS.veg)+Math.abs(sh.fruit-TARGETS.fruit)+
+          Math.abs(sh.grain-TARGETS.grain)+Math.abs(sh.prot-TARGETS.prot);
+  return Math.max(0,Math.round(100-dev/2));
+}
+function scoreLabel(s){
+  if(s>=85)return["хороший баланс","#5f8f66"];
+  if(s>=65)return["умеренное отклонение","#c9ab6b"];
+  return["заметное отклонение","#bd7a6a"];
+}
+function reactionFor(s){
+  if(s>=98)return"Идеально! Ровно по модели Гарвардской тарелки.";
+  if(s>=85)return"Отлично!";
+  if(s>=65)return"Неплохо!";
+  return"Есть куда расти.";
+}
+function kcalEstimate(products){
+  var k=0;
+  for(var i=0;i<products.length;i++){
+    var p=products[i];
+    k+=p.g*(KCAL100[p.cat]||100)/100;
+  }
+  return Math.round(k/10)*10;
+}
+function mealType(h){
+  if(h>=5&&h<11.5)return"Завтрак";
+  if(h<16.5)return"Обед";
+  if(h<22)return"Ужин";
+  return"Перекус";
+}
+function recommend(sh){
+  var diffs=[],k;
+  var names={veg:"овощей",fruit:"фруктов",grain:"цельнозерновых",prot:"белка"};
+  for(k in TARGETS)diffs.push({k:k,d:sh[k]-TARGETS[k]});
+  diffs.sort(function(a,b){return a.d-b.d});
+  var low=diffs[0],high=diffs[3];
+  /* овощи и фрукты — одна половина тарелки, овощей должно быть больше: если обе в дефиците,
+     не настаиваем именно на фрукте */
+  if(low.k==="fruit"){
+    var vegEntry=diffs.filter(function(x){return x.k==="veg"})[0];
+    if(vegEntry.d<0)low=vegEntry;
+  }
+  var parts=[];
+  if(low.d<=-10)parts.push("Добавьте "+names[low.k]+" — сейчас примерно "+
+    (low.d<=-15?"вдвое меньше":"заметно меньше")+" нормы.");
+  if(high.d>=12)parts.push("Доля "+names[high.k]+" выше цели — в следующий раз можно чуть меньше.");
+  if(!parts.length)return"Пропорции близки к модели Гарвардской тарелки. Так держать.";
+  return parts.join(" ");
+}
+function calcNorm(pr){
+  var s=pr.sex==="m"?5:-161;
+  var bmr=10*pr.weight+6.25*pr.height-5*pr.age+s;
+  var mult=[1.2,1.375,1.55,1.725][pr.activity<0?1:pr.activity];
+  var tdee=bmr*mult;
+  var goalAdj=[0.85,1,1.1,1][pr.goal<0?3:pr.goal];
+  var kcal=Math.round(tdee*goalAdj/10)*10;
+  return{kcal:kcal,prot:Math.round(kcal*0.27/4),fat:Math.round(kcal*0.30/9),carb:Math.round(kcal*0.43/4)};
+}
+function mkEntry(name,scIdx,dayTxt,time,day){
+  var prods=SCENARIOS[scIdx].products.map(function(p){return{n:p[0],cat:p[1],g:p[2]}});
+  var sh=shares(prods);
+  return{name:name,sc:scIdx,dayTxt:dayTxt,time:time,day:day,products:prods,sh:sh,
+    score:score(sh),kcal:kcalEstimate(prods)};
+}
+
+/* ═══════ svg helpers ═══════ */
+function icon(id,size,color){
+  return'<svg class="ic" width="'+size+'" height="'+size+'"'+(color?' style="color:'+color+'"':'')+
+    '><use href="#'+id+'"/></svg>';
+}
+function arcPath(a0,a1,r){
+  var large=(a1-a0)>Math.PI?1:0;
+  return "M0 0 L"+(Math.cos(a0)*r).toFixed(2)+" "+(Math.sin(a0)*r).toFixed(2)+
+    " A"+r+" "+r+" 0 "+large+" 1 "+(Math.cos(a1)*r).toFixed(2)+" "+(Math.sin(a1)*r).toFixed(2)+" Z";
+}
+function plateSVG(sh,size,animate){
+  var R=size/2-6,a=-Math.PI/2,parts="",order=["veg","fruit","grain","prot"],idx=0;
+  for(var i=0;i<order.length;i++){
+    var k=order[i],frac=(sh?sh[k]:TARGETS[k])/100;
+    if(frac<=0)continue;
+    var a1=a+frac*Math.PI*2;
+    parts+='<path d="'+arcPath(a,a1,R)+'" fill="'+CATMETA[k].col+'" fill-opacity=".18" stroke="'+CATMETA[k].col+
+      '" stroke-width="1.6"'+(animate?' class="psector" style="animation-delay:'+(idx*0.07)+'s"':'')+'></path>';
+    if(frac>0.07&&size>60){
+      var mid=(a+a1)/2,lx=Math.cos(mid)*R*0.6,ly=Math.sin(mid)*R*0.6;
+      parts+='<g transform="translate('+(lx-9).toFixed(1)+' '+(ly-9).toFixed(1)+')" color="'+CATMETA[k].col+'">'+
+        '<svg class="ic" width="18" height="18"><use href="#'+CATMETA[k].ic+'"/></svg></g>';
+    }
+    a=a1;idx++;
+  }
+  parts+='<circle cx="0" cy="0" r="'+R+'" fill="none" stroke="var(--line)" stroke-width="1"></circle>';
+  return'<svg width="'+size+'" height="'+size+'" viewBox="'+(-size/2)+' '+(-size/2)+' '+size+' '+size+'">'+parts+'</svg>';
+}
+
+/* ═══════ онбординг ═══════ */
+function renderOnb(){
+  var st=ONB[S.ob];
+  $("obFill").style.width=((S.ob+1)/ONB.length*100)+"%";
+  $("obNext").style.display="";
+  var b=$("obBody"),h="";
+  if(st.type==="opts"||st.type==="multi"){
+    h+='<div class="obtitle">'+st.title+'</div><div class="obsub">'+st.sub+'</div>';
+    for(var i=0;i<st.opts.length;i++){
+      var selected=st.type==="multi"?P.profile[st.key].indexOf(i)>=0:S.obSel===i;
+      h+='<button class="opt'+(selected?" sel":"")+'" data-act="obopt" data-i="'+i+'">'+
+        '<span class="oic">'+icon(st.opts[i][1],21)+'</span><span>'+st.opts[i][0]+
+        (st.subs?'<span class="sub2">'+st.subs[i]+'</span>':"")+'</span>'+
+        '<span class="ocheck">'+icon("i-check",14)+'</span></button>';
+    }
+    $("obNext").textContent="Далее";
+    $("obNext").disabled=st.type==="multi"?P.profile[st.key].length===0:S.obSel<0;
+  }else if(st.type==="form"){
+    var pr=P.profile;
+    h+='<div class="obtitle">'+st.title+'</div><div class="obsub">'+st.sub+'</div>'+
+      '<div class="seg" id="sexSeg"><span class="segthumb" id="sexThumb"></span>'+
+      '<button class="segb'+(pr.sex==="m"?" sel":"")+'" data-act="sex" data-s="m">Мужчина</button>'+
+      '<button class="segb'+(pr.sex==="f"?" sel":"")+'" data-act="sex" data-s="f">Женщина</button></div>'+
+      frow("Возраст","age",pr.age,"лет")+frow("Рост","height",pr.height,"см")+frow("Вес","weight",pr.weight,"кг");
+    $("obNext").textContent="Далее";
+    $("obNext").disabled=false;
+    $("obBody").innerHTML=h;
+    $("s-onb").classList.toggle("gender-f",pr.sex==="f");
+    positionSexThumb(false);
+    return;
+  }else if(st.type==="loss"){
+    h+='<div class="obtitle">'+st.title+'</div><div class="obsub">'+st.sub+'</div>'+
+      '<div class="normcard fu" style="margin:24px 0"><span class="step" style="justify-content:center;gap:22px">'+
+      '<button class="stepb" data-act="dec" data-k="targetLoss">'+icon("i-minus",18)+'</button>'+
+      '<span class="stepv" id="sv-targetLoss" style="font-size:30px;min-width:120px;height:34px"><span class="rollwrap" style="height:34px"><span class="roll" style="height:34px;line-height:34px">'+P.profile.targetLoss+'</span></span> <span class="unit">кг</span></span>'+
+      '<button class="stepb" data-act="inc" data-k="targetLoss">'+icon("i-plus",18)+'</button></span></div>';
+    $("obNext").textContent="Далее";
+    $("obNext").disabled=false;
+  }else if(st.type==="building"){
+    h+='<div class="obbuilding fu">'+
+      '<div class="obbicon"><svg class="ic" width="34" height="34"><use href="#i-plate"/></svg></div>'+
+      '<div class="obbttl">Строим ваш план…</div>'+
+      '<div class="obbsteps">'+
+      '<div class="obbstep" id="obb1"><span class="obbic">'+icon("i-check",13)+'</span>Анализируем ваши ответы</div>'+
+      '<div class="obbstep" id="obb2"><span class="obbic">'+icon("i-check",13)+'</span>Считаем норму калорий и БЖУ</div>'+
+      '<div class="obbstep" id="obb3"><span class="obbic">'+icon("i-check",13)+'</span>Готовим персональные рекомендации</div>'+
+      '</div></div>';
+    $("obNext").style.display="none";
+    b.innerHTML=h;
+    startBuildingSequence();
+    return;
+  }else{
+    P.norm=calcNorm(P.profile);
+    var pastIdx=P.profile.past<0?3:P.profile.past;
+    h+='<div class="obtitle">Ваша персональная норма</div>'+
+      '<div class="obsub">По методу Гарвардской тарелки не нужно взвешивать каждый грамм — достаточно держать пропорции. Норма ниже — просто ориентир.</div>'+
+      '<div class="normcard fu"><div class="normk">'+P.norm.kcal+' <small>ккал в день</small></div>'+
+      '<div class="normrow">'+
+      '<div class="normst"><b>'+P.norm.prot+' г</b><span>белки</span></div>'+
+      '<div class="normst"><b>'+P.norm.fat+' г</b><span>жиры</span></div>'+
+      '<div class="normst"><b>'+P.norm.carb+' г</b><span>углеводы</span></div></div></div>'+
+      '<div class="platebox">'+plateSVG(null,190,true)+'</div>'+
+      '<div class="adaptive fu" id="adaptiveMsg" style="animation-delay:.2s">'+PAST_MSG[pastIdx]+'</div>';
+    $("obNext").textContent="Начать";
+    $("obNext").disabled=false;
+  }
+  b.innerHTML=h;
+}
+function frow(label,key,val,unit){
+  return'<div class="frow" data-frow="'+key+'"><span class="fl">'+label+'</span><span class="step">'+
+    '<button class="stepb" data-act="dec" data-k="'+key+'">'+icon("i-minus",16)+'</button>'+
+    '<span class="stepv" id="sv-'+key+'"><span class="rollwrap"><span class="roll">'+val+'</span></span> <span class="unit">'+unit+'</span></span>'+
+    '<button class="stepb" data-act="inc" data-k="'+key+'">'+icon("i-plus",16)+'</button></span></div>';
+}
+/* переезжающий индикатор пола */
+function positionSexThumb(animate){
+  var seg=$("sexSeg");if(!seg)return;
+  var thumb=$("sexThumb");
+  var btns=seg.querySelectorAll(".segb");
+  var idx=P.profile.sex==="m"?0:1;
+  var b=btns[idx];
+  var bw=b.offsetWidth, bl=b.offsetLeft;
+  if(!bw){ /* первый кадр: ширина ещё не посчитана — берём половину и повторяем */
+    var segw=seg.clientWidth-6;
+    bw=segw/2; bl=3+idx*bw;
+    requestAnimationFrame(function(){positionSexThumb(false)});
+  }
+  if(!animate)thumb.style.transition="none";
+  thumb.style.width=bw+"px";
+  thumb.style.transform="translateX("+bl+"px)";
+  if(!animate){void thumb.offsetWidth;thumb.style.transition="";}
+}
+/* роллинг числа без перерисовки экрана */
+function rollNumber(key,newVal,dir){
+  var host=$("sv-"+key);if(!host)return;
+  var wrap=host.querySelector(".rollwrap");if(!wrap)return;
+  /* защита от накопления при быстрых тапах: убираем всё, что уже в процессе исчезновения */
+  var stale=wrap.querySelectorAll(".roll.up-out,.roll.down-out");
+  for(var s=0;s<stale.length;s++)if(stale[s].parentNode)stale[s].parentNode.removeChild(stale[s]);
+  var old=wrap.querySelector(".roll");
+  var next=document.createElement("span");
+  next.className="roll "+(dir>0?"up-in":"down-in");
+  next.textContent=newVal;
+  wrap.appendChild(next);
+  void next.offsetWidth;
+  if(old)old.classList.add(dir>0?"up-out":"down-out");
+  next.classList.remove("up-in","down-in");
+  setTimeout(function(){if(old&&old.parentNode)old.parentNode.removeChild(old)},280);
+}
+function obPick(i){
+  var st=ONB[S.ob];
+  if(st.type==="multi"){
+    var arr=P.profile[st.key];
+    if(i===0){P.profile[st.key]=[0];}
+    else{
+      var noneIdx=arr.indexOf(0);if(noneIdx>=0)arr.splice(noneIdx,1);
+      var at=arr.indexOf(i);
+      if(at>=0)arr.splice(at,1);else arr.push(i);
+    }
+  }else S.obSel=i;
+  /* обновляем выделение точечно — полный ре-рендер списка заставлял CSS-анимацию
+     появления проигрываться заново на каждый тап, из-за чего варианты на миг пропадали */
+  var opts=$("obBody").querySelectorAll(".opt");
+  for(var j=0;j<opts.length;j++){
+    var selected=st.type==="multi"?P.profile[st.key].indexOf(j)>=0:S.obSel===j;
+    opts[j].classList.toggle("sel",selected);
+  }
+  $("obNext").disabled=st.type==="multi"?P.profile[st.key].length===0:S.obSel<0;
+}
+function obNext(){
+  var st=ONB[S.ob];
+  if(st.type==="opts")P.profile[st.key]=S.obSel;
+  if(st.type==="result"){enterApp();return;}
+  S.ob++;
+  while(ONB[S.ob]&&ONB[S.ob].cond&&!ONB[S.ob].cond())S.ob++;
+  S.obSel=-1;
+  var nx=ONB[S.ob];
+  if(nx&&nx.type==="opts"&&P.profile[nx.key]>=0)S.obSel=P.profile[nx.key];
+  renderOnb();
+}
+function startBuildingSequence(){
+  setTimeout(function(){var e=$("obb1");if(e)e.classList.add("done")},500);
+  setTimeout(function(){var e=$("obb2");if(e)e.classList.add("done")},1100);
+  setTimeout(function(){var e=$("obb3");if(e)e.classList.add("done")},1700);
+  setTimeout(function(){
+    if(ONB[S.ob]&&ONB[S.ob].type==="building"){
+      S.ob++;S.obSel=-1;
+      renderOnb();
+    }
+  },2300);
+}
+function showScreen(id){
+  var s=document.querySelectorAll(".scr");
+  for(var i=0;i<s.length;i++)s[i].classList.remove("active");
+  $(id).classList.add("active");
+}
+function obBack(){
+  if(S.ob===0){showScreen("s-login");return;}
+  S.ob--;
+  while(S.ob>0&&ONB[S.ob].cond&&!ONB[S.ob].cond())S.ob--;
+  var st=ONB[S.ob];
+  S.obSel=(st.type==="opts"&&P.profile[st.key]>=0)?P.profile[st.key]:-1;
+  renderOnb();
+}
+
+/* ═══════ главная ═══════ */
+function enterApp(){
+  renderHome();renderHistory();renderProfile();
+  $("s-onb").classList.remove("active");
+  $("s-login").classList.remove("active");
+  $("s-app").classList.add("active");
+  ["home","history","recipes","profile"].forEach(function(v){
+    $("av-"+v).classList.toggle("active",v==="home");
+  });
+  document.querySelectorAll(".tabbar .tab").forEach(function(t){
+    t.classList.toggle("on",t.getAttribute("data-v")==="home");
+  });
+  tutStartCheck();
+}
+function todayEntries(){return P.history.filter(function(e){return e.day==="td"})}
+function avg(list){
+  if(!list.length)return null;
+  var s=0;for(var i=0;i<list.length;i++)s+=list[i].score;
+  return Math.round(s/list.length);
+}
+function avgShares(list){
+  var out={veg:0,fruit:0,grain:0,prot:0};
+  if(!list.length)return out;
+  for(var i=0;i<list.length;i++)for(var k in out)out[k]+=list[i].sh[k];
+  for(var k2 in out)out[k2]=Math.round(out[k2]/list.length);
+  return out;
+}
+function weekAvg(){
+  var vals=[],i;
+  for(i=0;i<P.week.length;i++)if(P.week[i].v!==null)vals.push({score:P.week[i].v});
+  var t=avg(todayEntries());
+  if(t!==null)vals.push({score:t});
+  return avg(vals)||0;
+}
+function patternHint(){
+  var a=avgShares(P.history);
+  if(a.veg<TARGETS.veg-6)return"На этой неделе овощей стабильно меньше нормы — попробуйте добавлять их к каждому приёму пищи.";
+  if(a.grain>TARGETS.grain+8)return"Цельнозерновых стабильно больше цели — чуть меньше гарнира сбалансирует тарелку.";
+  return"Пропорции за неделю близки к цели. Продолжайте в том же ритме.";
+}
+function findGapCategory(sh){
+  var keys=["veg","fruit","grain","prot"],worst=keys[0],worstDiff=Infinity;
+  for(var i=0;i<keys.length;i++){
+    var diff=sh[keys[i]]-TARGETS[keys[i]];
+    if(diff<worstDiff){worstDiff=diff;worst=keys[i];}
+  }
+  /* овощи и фрукты — одна половина тарелки, и овощей должно быть больше: если обе категории
+     в дефиците, не имеет смысла настаивать именно на фрукте (не каждый приём пищи включает фрукт) */
+  if(worst==="fruit"&&(sh.veg-TARGETS.veg)<0)return"veg";
+  return worst;
+}
+function suggestAdditions(sh){
+  var gap=findGapCategory(sh);
+  if(TARGETS[gap]-sh[gap]<8)return{cat:null,items:[]};
+  return{cat:gap,items:SUGGEST_ADD[gap]};
+}
+function greetingText(){
+  var h=new Date().getHours();
+  return h<5?"Доброй ночи":h<12?"Доброе утро":h<18?"Добрый день":"Добрый вечер";
+}
+function renderRecipes(){
+  var gap=findGapCategory(avgShares(P.history));
+  var txt=$("recipeTeaserTxt");
+  if(P.pro){
+    $("recipeBadge").style.display="none";
+    var r=RECIPES[gap][0];
+    txt.textContent=r.n+" — для баланса "+CATMETA[gap].name.toLowerCase();
+  }else{
+    $("recipeBadge").style.display="";
+    txt.textContent="Не хватает: "+CATMETA[gap].name.toLowerCase()+". Смотреть идеи →";
+  }
+}
+function pluralRecipes(n){
+  var n10=n%10,n100=n%100;
+  if(n10===1&&n100!==11)return"рецепт";
+  if(n10>=2&&n10<=4&&(n100<10||n100>=20))return"рецепта";
+  return"рецептов";
+}
+function isFreeRecipe(cat,idx){
+  return FREE_RECIPES.some(function(f){return f.cat===cat&&f.idx===idx});
+}
+function renderRecipesFull(){
+  $("recipesGreet").textContent=greetingText();
+  $("recipeBadge").style.display=P.pro?"none":"";
+  var box=$("recipesFull");
+  var cats=S.recipeFilter==="all"?["veg","fruit","grain","prot"]:[S.recipeFilter];
+  var h="",lockedCount=0;
+  for(var c=0;c<cats.length;c++){
+    var cat=cats[c],list=RECIPES[cat];
+    for(var i=0;i<list.length;i++){
+      var r=list[i];
+      if(P.pro||isFreeRecipe(cat,i)){
+        h+='<div class="recipe" data-act="recipeinfo" data-cat="'+cat+'" data-idx="'+i+'" style="cursor:pointer">'+
+          '<span class="ric">'+icon(r.ic,20)+'</span>'+
+          '<div class="meta"><div class="rn">'+r.n+'</div><div class="rd">'+r.d+'</div>'+
+          '<div class="rtag">≈ '+r.kcal+' ккал · '+CATMETA[cat].name.toLowerCase()+'</div></div></div>';
+      }else lockedCount++;
+    }
+  }
+  if(!P.pro&&lockedCount>0){
+    h+='<div class="recipelock"><div class="rl-icon">'+icon("i-spark",26)+'</div>'+
+      '<div class="rl-txt">Ещё '+lockedCount+' '+pluralRecipes(lockedCount)+' — в Pro, вместе с советами по готовке.</div>'+
+      '<button class="btn sec" data-act="openpro">Открыть в Pro</button></div>';
+  }
+  box.innerHTML=h||'<div class="footnote">Рецептов по этому фильтру пока нет.</div>';
+}
+function setRecipeFilter(f){
+  S.recipeFilter=f;
+  var btns=$("recipeFilter").querySelectorAll(".rbtn");
+  for(var i=0;i<btns.length;i++)btns[i].classList.toggle("sel",btns[i].getAttribute("data-f")===f);
+  renderRecipesFull();
+}
+function showRecipeInfo(cat,idx){
+  var r=RECIPES[cat]&&RECIPES[cat][idx];
+  if(!r)return;
+  S.curRecipe={cat:cat,idx:idx};
+  $("recipeTitle").textContent=r.n;
+  $("recipeMeta").textContent="≈ "+r.kcal+" ккал · "+r.time+" мин · "+r.servings+" "+servingsWord(r.servings);
+  $("recipeIcon").innerHTML=icon(r.ic,26);
+  var ih="";
+  for(var i=0;i<r.ing.length;i++)ih+='<div class="ringrow"><span class="ringdot"></span>'+r.ing[i]+'</div>';
+  $("recipeIng").innerHTML=ih;
+  var sh="";
+  for(var s=0;s<r.steps.length;s++)
+    sh+='<div class="rstep"><span class="rstepnum">'+(s+1)+'</span><span class="rsteptxt">'+r.steps[s]+'</span></div>';
+  $("recipeSteps").innerHTML=sh;
+  $("recipeTip").textContent=r.tip||"";
+  $("l-recipe").classList.add("open");
+}
+function servingsWord(n){
+  var n10=n%10,n100=n%100;
+  if(n===1)return"порция";
+  if(n10>=2&&n10<=4&&(n100<10||n100>=20))return"порции";
+  return"порций";
+}
+function renderMacroDiary(td){
+  var totalP=0,totalF=0,totalC=0;
+  for(var i=0;i<td.length;i++){
+    var m=macroEstimate(td[i].products);
+    totalP+=m.prot;totalF+=m.fat;totalC+=m.carb;
+  }
+  var norm=P.norm||{prot:0,fat:0,carb:0};
+  var rows=[["Белки",totalP,norm.prot||1],["Жиры",totalF,norm.fat||1],["Углеводы",totalC,norm.carb||1]];
+  var h="";
+  for(var r=0;r<rows.length;r++){
+    var name=rows[r][0],val=rows[r][1],target=rows[r][2];
+    var ratio=val/target;
+    var col=ratio>=1.15?"#bd7a6a":(ratio>=0.9?"#5f8f66":"var(--acc)");
+    var arrow=ratio>=1.1?"↑":(ratio<=0.55&&val>0?"↓":"");
+    var arrowCol=ratio>=1.1?"#bd7a6a":"var(--sub)";
+    h+='<div class="macrorow"><span class="mn">'+name+'</span>'+
+       '<span class="mtrack2"><i style="width:'+Math.min(100,Math.round(ratio*100))+'%;background:'+col+'"></i></span>'+
+       '<span class="mv">'+val+' / '+Math.round(target)+' г</span>'+
+       '<span class="marrow" style="color:'+arrowCol+'">'+arrow+'</span></div>';
+  }
+  $("macroDiary").innerHTML=h;
+}
+function renderHome(){
+  $("homeGreet").textContent=greetingText();
+  var td=todayEntries();
+  $("sumMeals").textContent=String(td.length);
+  var a=avg(td);
+  if(a===null)$("sumScore").textContent="—";else countUp($("sumScore"),a,700);
+  countUp($("sumWeek"),weekAvg(),700);
+  $("homeHint").textContent=td.length?patternHint():"Начните день с фотографии первого приёма пищи.";
+  $("scanCnt").textContent=P.pro?"Распознавания: без лимита":"Сегодня: "+P.scansToday+" из "+P.scanLimit;
+  /* кольцо лимита вокруг камеры */
+  var C=402.1;
+  var frac=P.pro?1:Math.min(1,P.scansToday/P.scanLimit);
+  var ring=$("scanRing");
+  ring.style.strokeDashoffset=String(C*(1-frac));
+  ring.style.stroke=P.pro?"var(--acc)":(P.scansToday>=P.scanLimit?"#bd7a6a":"var(--acc)");
+  ring.style.opacity=P.pro?".35":"1";
+  /* калории */
+  var k=0;for(var i=0;i<td.length;i++)k+=td[i].kcal;
+  var normK=P.norm?P.norm.kcal:2400;
+  animateKcal(k,normK);
+  var kcalRatio=k/normK;
+  $("kcalFill").style.width=Math.min(100,Math.round(kcalRatio*100))+"%";
+  $("kcalFill").style.background=kcalRatio>=1?"#bd7a6a":(kcalRatio>=0.85?"#c9ab6b":"var(--acc)");
+  renderMacroDiary(td);
+  /* коуч */
+  if(P.pro){
+    var wa=weekAvg(),d=wa-P.lastWeekAvg;
+    var as=avgShares(P.history);
+    $("coachBadge").style.display="none";
+    $("coachText").className="coach";
+    $("coachText").innerHTML='<div class="cw">'+icon("i-spark",16)+'Разбор недели</div>'+
+      "Средний баланс — "+wa+" из 100, "+(d>=0?"на "+d+" пункта лучше":"на "+(-d)+" пункта ниже")+" прошлой недели. "+
+      "Овощи в среднем "+as.veg+"% при цели 30% — "+(as.veg<24?"главная зона роста: добавляйте порцию овощей к обеду.":"хороший стабильный уровень.")+
+      " Белок держится на "+as.prot+"%. Лучший день — пятница.";
+  }else{
+    $("coachBadge").style.display="";
+    $("coachText").className="coach locked";
+    $("coachText").textContent="Каждую неделю ИИ-коуч разбирает ваши паттерны питания и даёт короткие рекомендации. Доступно в Pro.";
+  }
+  renderRecipes();
+}
+
+/* ═══════ камера / анализ / результат ═══════ */
+function openCam(){
+  if(!P.pro&&P.scansToday>=P.scanLimit){
+    $("proReason").textContent="Лимит бесплатных распознаваний на сегодня исчерпан ("+P.scanLimit+" из "+P.scanLimit+"). В Pro лимита нет.";
+    $("l-pro").classList.add("open");
+    return;
+  }
+  $("l-camera").classList.add("open");
+  startCamStream();
+}
+function startCamStream(){
+  var vid=$("camVideo");
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
+    $("camHint").textContent="Расположите тарелку в кадре целиком";
+    return;
+  }
+  navigator.mediaDevices.getUserMedia({video:{facingMode:"environment"},audio:false}).then(function(stream){
+    S.camStream=stream;
+    vid.srcObject=stream;
+    vid.classList.add("on");
+    $("camHint").textContent="Расположите тарелку в кадре целиком";
+  }).catch(function(){
+    $("camHint").textContent="Нет доступа к камере — используется демо-режим";
+  });
+}
+function stopCamStream(){
+  if(S.camStream){
+    S.camStream.getTracks().forEach(function(t){t.stop()});
+    S.camStream=null;
+  }
+  var vid=$("camVideo");
+  vid.classList.remove("on");
+  vid.srcObject=null;
+}
+function shutter(){
+  var f=$("flash");
+  f.classList.remove("on");void f.offsetWidth;f.classList.add("on");
+  if(navigator.vibrate)try{navigator.vibrate(15)}catch(e){}
+  var photo=capturePhotoBase64();
+  setTimeout(function(){
+    stopCamStream();
+    $("l-camera").classList.remove("open");
+    var isNew=!S.pendingRetake;
+    S.pendingRetake=false;
+    runAnalysis(isNew,photo);
+  },220);
+}
+function capturePhotoBase64(){
+  try{
+    var vid=$("camVideo");
+    if(!vid||!vid.videoWidth)return null;
+    var canvas=document.createElement("canvas");
+    canvas.width=vid.videoWidth;canvas.height=vid.videoHeight;
+    var ctx=canvas.getContext("2d");
+    ctx.drawImage(vid,0,0);
+    return canvas.toDataURL("image/jpeg",0.82).split(",")[1];
+  }catch(e){return null}
+}
+function retakePhoto(){
+  if(P.retakesToday>=P.retakeLimit){
+    showToast("Пересъёмок на сегодня больше нет ("+P.retakeLimit+" из "+P.retakeLimit+")");
+    return;
+  }
+  P.retakesToday++;
+  S.pendingRetake=true;
+  $("l-result").classList.remove("open");
+  if(navigator.vibrate)try{navigator.vibrate(15)}catch(e){}
+  $("l-camera").classList.add("open");
+  startCamStream();
+}
+/* ═══════ Gemini Vision (реальное распознавание) ═══════ */
+/* ⚠️ Ключ лежит прямо в коде — под APK для личного использования это ок,
+   но никогда не публикуй такой APK и не выкладывай его в общий доступ:
+   ключ можно вытащить из файла (это просто zip-архив). Для настоящего
+   релиза ключ должен жить на сервере, а не в приложении. */
+var GEMINI_API_KEY="AQ.Ab8RN6Lk6jngEx1g0byu1mdAk6vK1O_BNOTYwgMWRMbZVhNZWQ";
+var GEMINI_MODEL="gemini-2.5-flash";
+var GEMINI_CATS=["veg","fruit","grain","prot","other"];
+function analyzeWithGemini(base64jpeg){
+  var url="https://generativelanguage.googleapis.com/v1beta/models/"+GEMINI_MODEL+":generateContent?key="+GEMINI_API_KEY;
+  var prompt="Проанализируй фото тарелки с едой для приложения о методе Гарвардской тарелки. "+
+    "Если на фото НЕТ еды, либо фото слишком тёмное/размытое/еда не видна целиком — "+
+    "ответь СТРОГО {\"unclear\":true,\"reason\":\"краткая причина по-русски\"} и больше ничего. "+
+    "Если еда видна — определи все отдельные продукты на фото. Ответь СТРОГО в виде JSON без markdown и пояснений, "+
+    "точно такой структуры: {\"name\":\"короткое название блюда по-русски (2-4 слова)\","+
+    "\"items\":[{\"name\":\"название продукта по-русски\",\"cat\":\"veg|fruit|grain|prot|other\",\"grams\":число}]}. "+
+    "Категории: veg — овощи, fruit — фрукты, grain — цельнозерновые/крупы/хлеб/картофель, "+
+    "prot — белок (мясо, рыба, яйца, бобовые, творог), other — всё остальное (масла, соусы, орехи, молочное). "+
+    "Оцени вес каждого продукта в граммах реалистично для одной порции.";
+  var body={contents:[{parts:[
+    {inline_data:{mime_type:"image/jpeg",data:base64jpeg}},
+    {text:prompt}
+  ]}]};
+  return fetch(url,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)})
+    .then(function(r){
+      if(!r.ok)throw new Error("gemini http "+r.status);
+      return r.json();
+    })
+    .then(function(data){
+      var text=data.candidates[0].content.parts[0].text;
+      text=text.replace(/```json|```/g,"").trim();
+      var parsed=JSON.parse(text);
+      if(parsed.unclear){
+        var e=new Error("unclear:"+(parsed.reason||"не удалось распознать еду на фото"));
+        e.unclear=true;
+        throw e;
+      }
+      if(!parsed.items||!parsed.items.length)throw new Error("empty items");
+      return{
+        name:parsed.name||"Ваша тарелка",
+        products:parsed.items.map(function(it){
+          var cat=GEMINI_CATS.indexOf(it.cat)>=0?it.cat:"other";
+          var g=Math.round(it.grams);
+          if(!g||g<5)g=100;
+          return{n:String(it.name||"Продукт"),cat:cat,g:g};
+        })
+      };
+    });
+}
+function runAnalysis(isNewScan,photoBase64){
+  $("l-analyzing").classList.add("open");
+  ["an1","an2","an3"].forEach(function(id){$(id).classList.remove("done")});
+  var DUR=3600;
+  setTimeout(function(){$("an1").classList.add("done")},1100);
+  setTimeout(function(){$("an2").classList.add("done")},2200);
+  var t0=Date.now();
+  var pctTimer=setInterval(function(){
+    var pct=Math.min(99,Math.round((Date.now()-t0)/DUR*100));
+    var el=$("anPct");
+    if(el&&el.ownerDocument&&el.ownerDocument.contains(el))el.textContent=pct+"%";
+    else clearInterval(pctTimer);
+  },80);
+
+  function finish(name,products,source){
+    clearInterval(pctTimer);
+    var el3=$("an3");if(el3)el3.classList.add("done");
+    $("l-analyzing").classList.remove("open");
+    if(isNewScan)P.scansToday++;
+    var now=new Date();
+    S.cur={name:name,sc:S.scenario%SCENARIOS.length,
+      type:mealType(now.getHours()+now.getMinutes()/60),
+      time:("0"+now.getHours()).slice(-2)+":"+("0"+now.getMinutes()).slice(-2),
+      products:products,source:source};
+    S.readonly=false;
+    renderResult(true);
+    $("l-result").classList.add("open");
+    renderHome();
+  }
+  function useFallback(reason){
+    var wait=Math.max(300,DUR-(Date.now()-t0));
+    setTimeout(function(){
+      var sc=SCENARIOS[S.scenario%SCENARIOS.length];
+      S.scenario++;
+      finish(sc.name,sc.products.map(function(p){return{n:p[0],cat:p[1],g:p[2]}}),"demo:"+(reason||"нет фото/ключа"));
+    },wait);
+  }
+
+  if(photoBase64&&GEMINI_API_KEY){
+    var settled=false;
+    var giveUp=setTimeout(function(){if(!settled){settled=true;useFallback("таймаут ответа");}},9000);
+    analyzeWithGemini(photoBase64).then(function(res){
+      if(settled)return;
+      settled=true;clearTimeout(giveUp);
+      finish(res.name,res.products,"ai");
+    }).catch(function(err){
+      if(settled)return;
+      settled=true;clearTimeout(giveUp);
+      if(err&&err.unclear){
+        handleUnclear(err.message.replace(/^unclear:/,""));
+      }else{
+        useFallback((err&&err.message)?err.message:"ошибка запроса");
+      }
+    });
+  }else{
+    useFallback(!photoBase64?"нет фото с камеры":"нет ключа");
+  }
+
+  function handleUnclear(reason){
+    clearInterval(pctTimer);
+    $("l-analyzing").classList.remove("open");
+    /* скан не тратится и не подставляется случайная демо-тарелка — честно просим переснять */
+    showToast("Не получилось распознать: "+reason+". Попробуйте переснять.");
+    if(navigator.vibrate)try{navigator.vibrate([15,60,15])}catch(e){}
+    $("l-camera").classList.add("open");
+    startCamStream();
+  }
+}
+function renderResult(animate){
+  var cur=S.cur;
+  var sh=shares(cur.products),s=score(sh),lab=scoreLabel(s);
+  cur.sh=sh;cur.score=s;cur.kcal=kcalEstimate(cur.products);
+  $("resName").textContent=cur.name;
+  $("resMeta").textContent=(cur.type||"Приём пищи")+" · "+(cur.dayTxt||"Сегодня")+", "+cur.time;
+  var badge=$("srcBadge");
+  if(cur.source==="ai"){
+    badge.style.display="inline-flex";badge.className="srcbadge ai";
+    badge.textContent="Распознано ИИ (Gemini)";
+  }else if(cur.source&&cur.source.indexOf("demo")===0){
+    badge.style.display="inline-flex";badge.className="srcbadge demo";
+    badge.textContent="Демо-режим ("+cur.source.split(":")[1]+")";
+  }else{
+    badge.style.display="none";
+  }
+  /* кольцо счёта */
+  var C=364.4,arc=$("scoreArc");
+  arc.style.stroke=lab[1];
+  if(animate){
+    arc.style.transition="none";arc.style.strokeDashoffset=String(C);
+    void arc.getBoundingClientRect();
+    arc.style.transition="";
+    countUp($("resScore"),s,850);
+    setTimeout(function(){arc.style.strokeDashoffset=String(C*(1-s/100))},40);
+  }else{
+    arc.style.strokeDashoffset=String(C*(1-s/100));
+    $("resScore").textContent=String(s);
+  }
+  /* легенда с барами */
+  var leg="",order=["veg","fruit","grain","prot"];
+  for(var i=0;i<order.length;i++){
+    var k=order[i];
+    leg+='<div class="legwrap"><div class="legrow"><span class="legdot" style="background:'+CATMETA[k].col+'"></span>'+
+      CATMETA[k].name+'<span class="lv">'+sh[k]+'% · цель '+TARGETS[k]+'%</span></div>'+
+      '<div class="legbar"><div class="legbarf" style="width:'+Math.min(100,sh[k]/TARGETS[k]*50)+'%;background:'+CATMETA[k].col+'"></div></div></div>';
+  }
+  $("resLeg").innerHTML=leg;
+  var tag=$("resTag");
+  tag.textContent=lab[0];
+  tag.style.background=lab[1]+"22";tag.style.color=lab[1];
+  $("resKcal").textContent="≈ "+cur.kcal+" ккал";
+  var react=$("resReact");
+  react.textContent=reactionFor(s);
+  react.style.color=lab[1];
+  $("resRec").textContent=recommend(sh);
+  $("res100hint").style.display=s>=98?"none":"block";
+  /* что добавить в тарелку */
+  var sug=suggestAdditions(sh);
+  var sugBox=$("suggestBox");
+  if(S.readonly||!sug.cat){
+    $("suggestLbl").style.display="none";sugBox.style.display="none";sugBox.innerHTML="";
+  }else{
+    $("suggestLbl").style.display="";sugBox.style.display="";
+    var sh2="";
+    for(var si=0;si<sug.items.length;si++){
+      var it=sug.items[si];
+      sh2+='<div class="suggestrow" data-act="addsuggest" data-cat="'+sug.cat+'" data-si="'+si+'">'+
+        '<span class="ric" style="color:'+CATMETA[sug.cat].col+'">'+icon(PRODICON[it[0]]||CATMETA[sug.cat].ic,18)+'</span>'+
+        '<span class="sn">+'+it[2]+' г '+it[0].toLowerCase()+'</span>'+
+        '<button class="chip sel" style="pointer-events:none">Добавить</button></div>';
+    }
+    sugBox.innerHTML=sh2;
+  }
+  /* продукты */
+  var box=$("resProds"),h="";
+  for(var j=0;j<cur.products.length;j++){
+    var p=cur.products[j];
+    h+='<div class="prod'+(animate?" animate":"")+'"><span class="prodic" style="color:'+CATMETA[p.cat].col+'">'+icon(PRODICON[p.n]||CATMETA[p.cat].ic,19)+'</span>'+
+      '<div class="meta"><div class="pn">'+p.n+'</div><div class="pg">'+CATMETA[p.cat].name+' · '+p.g+' г</div></div>';
+    if(!S.readonly){
+      h+='<button class="pbtn" data-act="pdec" data-j="'+j+'">'+icon("i-minus",15)+'</button>'+
+        '<button class="pbtn" data-act="pinc" data-j="'+j+'">'+icon("i-plus",15)+'</button>'+
+        '<button class="pdel" data-act="pdel" data-j="'+j+'">'+icon("i-x",16)+'</button>';
+    }
+    h+='</div>';
+  }
+  box.innerHTML=h;
+  var add=$("resAdd"),ah="";
+  if(!S.readonly)
+    for(var m=0;m<ADDABLE.length;m++)
+      ah+='<button class="chip" data-act="padd" data-m="'+m+'">+ '+ADDABLE[m][0]+'</button>';
+  add.innerHTML=ah;
+  /* микро */
+  if(P.pro){
+    $("microBadge").style.display="none";
+    $("microLocked").style.display="none";
+    var mi=microEstimate(cur.products),mh="";
+    for(var q=0;q<mi.length;q++)
+      mh+='<div class="micro"><div class="mt">'+mi[q][0]+'<span>'+mi[q][1]+'</span></div>'+
+        '<div class="mtrack"><div class="mfill" id="mfill-'+q+'" data-target="'+mi[q][2]+'" style="width:0%"></div></div></div>';
+    $("microList").innerHTML=mh;
+    setTimeout(function(){
+      var bars=document.querySelectorAll('#microList .mfill');
+      for(var b=0;b<bars.length;b++)bars[b].style.width=bars[b].getAttribute("data-target")+"%";
+    },50);
+  }else{
+    $("microBadge").style.display="";
+    $("microLocked").style.display="";
+    $("microList").innerHTML="";
+  }
+  $("resFoot").style.display=S.readonly?"none":"flex";
+}
+function countUp(el,to,dur){
+  if(!el)return;
+  var from=parseInt(el.textContent,10);if(isNaN(from))from=0;
+  var t0=Date.now();
+  (function step(){
+    if(!el||!el.ownerDocument||!el.ownerDocument.contains(el))return;
+    var p=Math.min(1,(Date.now()-t0)/dur);
+    p=1-Math.pow(1-p,3);
+    el.textContent=String(Math.round(from+(to-from)*p));
+    if(p<1)requestAnimationFrame(step);
+  })();
+}
+function animateKcal(to,norm){
+  var el=$("kcalToday");if(!el)return;
+  var m=el.textContent.match(/\d+/);
+  var from=m?parseInt(m[0],10):0;
+  var t0=Date.now(),dur=700;
+  (function step(){
+    if(!el||!el.ownerDocument||!el.ownerDocument.contains(el))return;
+    var p=Math.min(1,(Date.now()-t0)/dur);
+    p=1-Math.pow(1-p,3);
+    el.textContent="≈ "+Math.round(from+(to-from)*p)+" из "+norm+" ккал";
+    if(p<1)requestAnimationFrame(step);
+  })();
+}
+function editProd(j,delta){
+  var p=S.cur.products[j];if(!p)return;
+  p.g=Math.max(0,p.g+delta);
+  if(p.g===0)S.cur.products.splice(j,1);
+  renderResult(false);
+}
+function delProd(j){S.cur.products.splice(j,1);renderResult(false)}
+function addProd(m){
+  var a=ADDABLE[m];
+  S.cur.products.push({n:a[0],cat:a[1],g:a[2]});
+  renderResult(false);
+}
+function addSuggested(cat,si){
+  var it=SUGGEST_ADD[cat]&&SUGGEST_ADD[cat][si];
+  if(!it)return;
+  S.cur.products.push({n:it[0],cat:it[1],g:it[2]});
+  if(navigator.vibrate)try{navigator.vibrate(10)}catch(e){}
+  renderResult(false);
+}
+function saveMeal(){
+  P.history.unshift({name:S.cur.name,sc:S.cur.sc,dayTxt:"Сегодня",time:S.cur.time,day:"td",
+    type:S.cur.type,products:S.cur.products,sh:S.cur.sh,score:S.cur.score,kcal:S.cur.kcal,source:S.cur.source});
+  S.lastSaved=P.history[0];
+  $("l-result").classList.remove("open");
+  if(navigator.vibrate)try{navigator.vibrate(20)}catch(e){}
+  showToast("Приём пищи сохранён",true);
+  renderHome();renderHistory();
+}
+function undoSave(){
+  if(!S.lastSaved)return;
+  var i=P.history.indexOf(S.lastSaved);
+  if(i>=0)P.history.splice(i,1);
+  S.lastSaved=null;
+  hideToast();
+  showToast("Запись удалена");
+  renderHome();renderHistory();
+}
+
+/* ═══════ история ═══════ */
+function markColor(s){return scoreLabel(s)[1]}
+function renderHistory(){
+  var box=$("hFeed"),h="",lastDay="";
+  var dayNames={td:"Сегодня",yd:"Вчера",old:"Ранее"};
+  var groups={td:[],yd:[],old:[]};
+  for(var g=0;g<P.history.length;g++)groups[P.history[g].day].push(P.history[g]);
+  for(var i=0;i<P.history.length;i++){
+    var e=P.history[i];
+    if(e.day!==lastDay){
+      var ga=avg(groups[e.day]);
+      h+='<div class="daylbl"><span>'+dayNames[e.day]+'</span><span class="dayavg">средний баланс '+ga+'</span></div>';
+      lastDay=e.day;
+    }
+    h+='<div class="hentry" style="animation-delay:'+Math.min(i*0.04,0.3)+'s" data-act="hopen" data-i="'+i+'">'+
+      '<span class="hthumb">'+plateSVG(e.sh,44)+'</span>'+
+      '<div class="meta"><div class="hn">'+(e.type?e.type+" · ":"")+e.name+'</div>'+
+      '<div class="ht">'+e.dayTxt+', '+e.time+' · '+e.score+' / 100 · ≈ '+e.kcal+' ккал</div></div>'+
+      '<span class="hmark" style="background:'+markColor(e.score)+'"></span></div>';
+  }
+  box.innerHTML=h;
+  renderCharts();
+  positionHistThumb(false);
+}
+function renderCharts(){
+  var bh="",t=avg(todayEntries());
+  for(var d=0;d<7;d++){
+    var w=P.week[d];
+    var v=w.v!==null?w.v:t;
+    var isCur=w.v===null;
+    bh+='<div class="barcol'+(isCur?" cur":"")+'" data-act="daybar" data-idx="'+d+'">'+
+      (v!==null?'<b>'+v+'</b>':"")+
+      '<i style="height:'+(v!==null?v:4)+'%"></i><span>'+w.d+'</span></div>';
+  }
+  $("weekBars").innerHTML=bh;
+  var wa=weekAvg(),diff=wa-P.lastWeekAvg;
+  $("chartTrend").textContent=(diff>=0?"+":"")+diff+" к прошлой";
+  $("dayDetail").textContent="Нажмите на день, чтобы посмотреть подробности";
+  var cnt={};
+  for(var x=0;x<P.history.length;x++)
+    for(var y=0;y<P.history[x].products.length;y++){
+      var n=P.history[x].products[y].n;cnt[n]=(cnt[n]||0)+1;
+    }
+  var arr=Object.keys(cnt).map(function(n){return[n,cnt[n]]})
+    .sort(function(a2,b2){return b2[1]-a2[1]}).slice(0,5);
+  var fh="";
+  for(var z=0;z<arr.length;z++)
+    fh+='<div class="freq">'+arr[z][0]+'<span>'+arr[z][1]+'×</span></div>';
+  $("freqList").innerHTML=fh;
+}
+function showDayDetail(idx){
+  var w=P.week[idx];if(!w)return;
+  var t=avg(todayEntries());
+  var v=w.v!==null?w.v:t;
+  var bars=$("weekBars").children;
+  for(var i=0;i<bars.length;i++)bars[i].classList.toggle("picked",i===idx);
+  if(v===null){$("dayDetail").textContent=w.d+": пока нет данных.";return;}
+  var lab=scoreLabel(v);
+  $("dayDetail").textContent=w.d+": баланс "+v+" из 100 — "+lab[0]+".";
+}
+function setHTab(name){
+  S.htab=name;
+  var btns=$("histSeg").querySelectorAll('.segb');
+  for(var i=0;i<btns.length;i++)btns[i].classList.toggle("sel",btns[i].getAttribute("data-h")===name);
+  positionHistThumb(true);
+  $("hFeed").style.display=name==="feed"?"block":"none";
+  $("hCharts").style.display=name==="charts"?"block":"none";
+  $("hWeight").style.display=name==="weight"?"block":"none";
+  if(name==="weight")renderWeight();
+}
+function positionHistThumb(animate){
+  var seg=$("histSeg");if(!seg)return;
+  var thumb=$("histThumb");
+  var btns=seg.querySelectorAll(".segb");
+  var order=["feed","charts","weight"];
+  var idx=order.indexOf(S.htab);if(idx<0)idx=0;
+  var b=btns[idx];
+  var bw=b.offsetWidth,bl=b.offsetLeft;
+  if(!bw){
+    var segw=seg.clientWidth-6;
+    bw=segw/btns.length;bl=3+idx*bw;
+    requestAnimationFrame(function(){positionHistThumb(false)});
+  }
+  if(!animate)thumb.style.transition="none";
+  thumb.style.width=bw+"px";
+  thumb.style.transform="translateX("+bl+"px)";
+  if(!animate){void thumb.offsetWidth;thumb.style.transition="";}
+}
+/* ═══════ вес ═══════ */
+function isoDate(d){return d.getFullYear()+"-"+("0"+(d.getMonth()+1)).slice(-2)+"-"+("0"+d.getDate()).slice(-2)}
+function fmtDateRu(iso){
+  var months=["янв","фев","мар","апр","мая","июн","июл","авг","сен","окт","ноя","дек"];
+  var d=new Date(iso+"T00:00:00");
+  return d.getDate()+" "+months[d.getMonth()];
+}
+function seedWeights(){
+  var base=P.profile.weight,today=new Date();
+  for(var i=13;i>=0;i--){
+    var d=new Date(today);d.setDate(d.getDate()-i);
+    var drift=(i/13)*1.2;
+    var noise=((i*37)%5-2)*0.1;
+    var w=Math.round((base+drift+noise)*10)/10;
+    P.weights.push({date:isoDate(d),weight:w});
+  }
+}
+function sortedWeights(){return P.weights.slice().sort(function(a,b){return a.date<b.date?-1:1})}
+function weightTrend(days){
+  var ws=sortedWeights();
+  if(ws.length<2)return null;
+  var last=ws[ws.length-1];
+  var targetTime=new Date(last.date+"T00:00:00").getTime()-days*86400000;
+  var best=ws[0],bestDiff=Infinity;
+  for(var i=0;i<ws.length;i++){
+    var diff=Math.abs(new Date(ws[i].date+"T00:00:00").getTime()-targetTime);
+    if(diff<bestDiff){bestDiff=diff;best=ws[i];}
+  }
+  if(best===last)return null;
+  return Math.round((last.weight-best.weight)*10)/10;
+}
+function fmtDelta(v){
+  if(v===null)return"—";
+  return(v>0?"+":"")+v.toFixed(1)+" кг";
+}
+function weightChartSVG(ws){
+  if(ws.length<2)return'<div class="footnote">Добавьте хотя бы 2 записи, чтобы построить график.</div>';
+  var W=300,H=100,pad=10;
+  var vals=ws.map(function(w){return w.weight});
+  var min=Math.min.apply(null,vals),max=Math.max.apply(null,vals);
+  if(min===max){min-=1;max+=1;}
+  var pts=ws.map(function(w,i){
+    var x=pad+i*((W-2*pad)/(ws.length-1));
+    var y=H-pad-((w.weight-min)/(max-min))*(H-2*pad);
+    return x.toFixed(1)+","+y.toFixed(1);
+  });
+  var last=pts[pts.length-1].split(",");
+  return '<svg width="100%" height="100" viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none">'+
+    '<polyline points="'+pts.join(" ")+'" fill="none" stroke="var(--acc)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>'+
+    '<circle cx="'+last[0]+'" cy="'+last[1]+'" r="4" fill="var(--acc)"/>'+
+    '</svg>';
+}
+function renderWeight(){
+  if(!P.weights.length)seedWeights();
+  var ws=sortedWeights();
+  var last=ws[ws.length-1];
+  var curW=last?last.weight:P.profile.weight;
+  $("weightNow").textContent=curW.toFixed(1);
+  var wk=weightTrend(7),mo=weightTrend(30);
+  $("weightTrends").innerHTML="За неделю: <b>"+fmtDelta(wk)+"</b>&nbsp;&nbsp;&nbsp;За месяц: <b>"+fmtDelta(mo)+"</b>";
+  $("weightChart").innerHTML=weightChartSVG(ws);
+  /* ИМТ */
+  var bmi=calcBMI(curW,P.profile.height);
+  $("bmiVal").textContent=bmi.toFixed(1);
+  $("bmiTag").textContent=bmiLabel(bmi);
+  /* прогноз (Pro) */
+  if(!P.pro){
+    $("forecastBadge").style.display="";
+    $("forecastVal").textContent="—";
+    $("forecastSub").textContent="Откройте в Pro";
+  }else{
+    $("forecastBadge").style.display="none";
+    var f=forecastWeight();
+    if(!f){$("forecastVal").textContent="—";$("forecastSub").textContent="Нужно больше записей";}
+    else if(f.type==="target"){$("forecastVal").textContent="~"+f.weeks+" нед";$("forecastSub").textContent="До "+f.target+" кг при текущем темпе";}
+    else{$("forecastVal").textContent=f.weight+" кг";$("forecastSub").textContent="Прогноз через 4 недели";}
+  }
+  var lh="";
+  for(var i=ws.length-1;i>=0;i--){
+    var w=ws[i];
+    lh+='<div class="wrow" data-act="editw" data-date="'+w.date+'"><span class="wd">'+fmtDateRu(w.date)+'</span>'+
+      '<span class="wv">'+w.weight.toFixed(1)+' кг</span><svg class="ic oic" width="16" height="16"><use href="#i-pencil"/></svg></div>';
+  }
+  $("weightList").innerHTML=lh||'<div class="footnote">Пока нет записей веса.</div>';
+}
+function calcBMI(weight,heightCm){
+  var h=heightCm/100;
+  return weight/(h*h);
+}
+function bmiLabel(bmi){
+  if(bmi<18.5)return"Недостаток веса";
+  if(bmi<25)return"Норма";
+  if(bmi<30)return"Избыток веса";
+  return"Ожирение";
+}
+function linearSlopePerDay(ws){
+  if(ws.length<3)return null;
+  var n=ws.length,sumX=0,sumY=0,sumXY=0,sumXX=0;
+  var t0=new Date(ws[0].date+"T00:00:00").getTime();
+  for(var i=0;i<n;i++){
+    var x=(new Date(ws[i].date+"T00:00:00").getTime()-t0)/86400000;
+    var y=ws[i].weight;
+    sumX+=x;sumY+=y;sumXY+=x*y;sumXX+=x*x;
+  }
+  var denom=(n*sumXX-sumX*sumX);
+  if(denom===0)return 0;
+  return(n*sumXY-sumX*sumY)/denom;
+}
+function forecastWeight(){
+  var ws=sortedWeights();
+  var slope=linearSlopePerDay(ws);
+  if(slope===null)return null;
+  var last=ws[ws.length-1];
+  if(P.profile.goal===0&&slope<-0.005&&P.profile.targetLoss>0){
+    var target=last.weight-P.profile.targetLoss;
+    var weeksToTarget=(last.weight-target)/(-slope*7);
+    if(weeksToTarget>0&&weeksToTarget<52)
+      return{type:"target",weeks:Math.round(weeksToTarget),target:Math.round(target*10)/10};
+  }
+  var in4w=last.weight+slope*28;
+  return{type:"proj",weight:Math.round(in4w*10)/10};
+}
+function openAddWeight(){
+  var today=isoDate(new Date());
+  var ws=sortedWeights();
+  var existing=P.weights.filter(function(w){return w.date===today})[0];
+  S.editWeightDate=today;
+  S.editWeightVal=existing?existing.weight:(ws.length?ws[ws.length-1].weight:P.profile.weight);
+  $("wsheetTtl").textContent=existing?"Изменить вес":"Добавить вес";
+  $("wsheetDate").textContent="Сегодня, "+fmtDateRu(today);
+  $("wvalTxt").textContent=S.editWeightVal.toFixed(1);
+  $("wdelBtn").style.display=existing?"block":"none";
+  $("dim").classList.add("on");
+  $("weightsheet").classList.add("open");
+}
+function openEditWeight(date){
+  var w=P.weights.filter(function(x){return x.date===date})[0];
+  if(!w)return;
+  S.editWeightDate=date;
+  S.editWeightVal=w.weight;
+  $("wsheetTtl").textContent="Изменить вес";
+  $("wsheetDate").textContent=fmtDateRu(date);
+  $("wvalTxt").textContent=w.weight.toFixed(1);
+  $("wdelBtn").style.display="block";
+  $("dim").classList.add("on");
+  $("weightsheet").classList.add("open");
+}
+function wstep(dir){
+  S.editWeightVal=Math.max(30,Math.min(250,Math.round((S.editWeightVal+dir*0.1)*10)/10));
+  $("wvalTxt").textContent=S.editWeightVal.toFixed(1);
+  if(navigator.vibrate)try{navigator.vibrate(6)}catch(e){}
+}
+function saveWeight(){
+  var idx=-1;
+  for(var i=0;i<P.weights.length;i++)if(P.weights[i].date===S.editWeightDate)idx=i;
+  if(idx>=0)P.weights[idx].weight=S.editWeightVal;
+  else P.weights.push({date:S.editWeightDate,weight:S.editWeightVal});
+  var today=isoDate(new Date());
+  if(S.editWeightDate===today){P.profile.weight=S.editWeightVal;P.norm=calcNorm(P.profile);renderProfile();}
+  closeSheets();
+  renderWeight();
+  showToast("Вес сохранён");
+}
+function deleteWeight(){
+  for(var i=0;i<P.weights.length;i++)if(P.weights[i].date===S.editWeightDate){P.weights.splice(i,1);break;}
+  closeSheets();
+  renderWeight();
+  showToast("Запись удалена");
+}
+function openEntry(i){
+  var e=P.history[i];if(!e)return;
+  S.cur={name:e.name,sc:e.sc,type:e.type,dayTxt:e.dayTxt,time:e.time,
+    products:e.products.slice(),sh:e.sh,score:e.score,kcal:e.kcal,source:e.source};
+  S.readonly=true;
+  renderResult(true);
+  $("l-result").classList.add("open");
+}
+function pickRange(r){
+  if((r==="3"||r==="12")&&!P.pro){
+    $("proReason").textContent="Тренды за 3 и 12 месяцев и сравнение периодов доступны в Pro.";
+    $("l-pro").classList.add("open");
+    return;
+  }
+  var btns=document.querySelectorAll('#rangeSeg .rbtn');
+  for(var i=0;i<btns.length;i++)btns[i].classList.toggle("sel",btns[i].getAttribute("data-r")===r);
+  var titles={w:"Баланс за неделю",m:"Баланс за месяц","3":"Баланс за 3 месяца","12":"Баланс за год"};
+  $("chartTitle").textContent=titles[r];
+  if(r!=="w")showToast("Демо: данные показаны за неделю");
+}
+
+/* ═══════ профиль ═══════ */
+var GOALS=["Похудение","Поддержание веса","Набор массы","Наладить питание"];
+function renderProfile(){
+  var pr=P.profile;
+  $("profSummary").textContent=GOALS[pr.goal<0?3:pr.goal]+" · "+(pr.sex==="m"?"М":"Ж")+", "+pr.age+" лет · норма "+(P.norm?P.norm.kcal:"—")+" ккал";
+  $("pvData").innerHTML=pr.weight+" кг · "+pr.height+" см"+icon("i-chevr",15);
+  $("expBadge").style.display=P.pro?"none":"";
+  var subCard=$("subCard");
+  subCard.classList.toggle("pro",P.pro);
+  $("subIcon").innerHTML=icon(P.pro?"i-spark":"i-sliders",20);
+  if(P.pro){
+    $("subTitle").textContent="Тарелка Pro активна";
+    $("subSub").textContent=(P.payPlan==="y"?"Годовой план · €29.99/год":"Месячный план · €4.99/мес");
+  }else{
+    $("subTitle").textContent="Бесплатный план";
+    $("subSub").textContent="Откройте больше возможностей с Pro";
+  }
+}
+function openDataSheet(){
+  S.edit={weight:P.profile.weight,height:P.profile.height,goal:P.profile.goal<0?3:P.profile.goal};
+  renderDataSheet();
+  $("dim").classList.add("on");
+  $("datasheet").classList.add("open");
+}
+function renderDataSheet(){
+  var h='<div class="seg" id="egoalSeg" style="margin-bottom:12px"><span class="segthumb" id="egoalThumb"></span>';
+  for(var i=0;i<GOALS.length;i++)
+    h+='<button class="segb'+(S.edit.goal===i?" sel":"")+'" style="font-size:11.5px;padding:9px 2px" data-act="egoal" data-i="'+i+'">'+GOALS[i].split(" ")[0]+'</button>';
+  h+='</div>'+
+    '<div class="frow" data-frow="eweight"><span class="fl">Вес</span><span class="step">'+
+    '<button class="stepb" data-act="edec" data-k="weight">'+icon("i-minus",16)+'</button>'+
+    '<span class="stepv" id="esv-weight"><span class="rollwrap"><span class="roll">'+S.edit.weight+'</span></span> <span class="unit">кг</span></span>'+
+    '<button class="stepb" data-act="einc" data-k="weight">'+icon("i-plus",16)+'</button></span></div>'+
+    '<div class="frow" data-frow="eheight"><span class="fl">Рост</span><span class="step">'+
+    '<button class="stepb" data-act="edec" data-k="height">'+icon("i-minus",16)+'</button>'+
+    '<span class="stepv" id="esv-height"><span class="rollwrap"><span class="roll">'+S.edit.height+'</span></span> <span class="unit">см</span></span>'+
+    '<button class="stepb" data-act="einc" data-k="height">'+icon("i-plus",16)+'</button></span></div>';
+  $("dataBody").innerHTML=h;
+  positionEgoalThumb(false);
+}
+function positionEgoalThumb(animate){
+  var seg=$("egoalSeg");if(!seg)return;
+  var thumb=$("egoalThumb");
+  var btns=seg.querySelectorAll(".segb");
+  var b=btns[S.edit.goal];if(!b)return;
+  var bw=b.offsetWidth,bl=b.offsetLeft;
+  if(!bw){
+    var segw=seg.clientWidth-6;
+    bw=segw/btns.length;bl=3+S.edit.goal*bw;
+    requestAnimationFrame(function(){positionEgoalThumb(false)});
+  }
+  if(!animate)thumb.style.transition="none";
+  thumb.style.width=bw+"px";
+  thumb.style.transform="translateX("+bl+"px)";
+  if(!animate){void thumb.offsetWidth;thumb.style.transition="";}
+}
+function saveData(){
+  P.profile.weight=S.edit.weight;
+  P.profile.height=S.edit.height;
+  P.profile.goal=S.edit.goal;
+  P.norm=calcNorm(P.profile);
+  closeSheets();
+  renderProfile();renderHome();
+  showToast("Норма пересчитана: "+P.norm.kcal+" ккал");
+}
+function exportHist(){
+  if(!P.pro){
+    $("proReason").textContent="Экспорт истории (PDF или CSV) входит в Pro.";
+    $("l-pro").classList.add("open");
+    return;
+  }
+  showToast("История экспортирована (CSV)");
+}
+
+/* ═══════ pro / оплата ═══════ */
+function tryPro(){
+  S.payBusy=false;
+  $("pstBtn").classList.add("on");
+  $("pstFace").classList.remove("on");
+  $("pstDone").classList.remove("on");
+  $("paySheetTtl").textContent="Тарелка Pro — год";
+  $("paySheetSub").textContent="7 дней бесплатно, далее €29.99 в год. Сегодня — €0.00.";
+  $("dim").classList.add("on");
+  $("paysheet").classList.add("open");
+}
+function closeSheets(){
+  if(S.payBusy)return;
+  $("dim").classList.remove("on");
+  $("paysheet").classList.remove("open");
+  $("datasheet").classList.remove("open");
+  $("weightsheet").classList.remove("open");
+}
+function confirmPay(){
+  if(S.payBusy)return;
+  S.payBusy=true;
+  $("pstBtn").classList.remove("on");
+  $("pstFace").classList.add("on");
+  setTimeout(function(){
+    $("pstFace").classList.remove("on");
+    $("pstDone").classList.add("on");
+    if(navigator.vibrate)try{navigator.vibrate(25)}catch(e){}
+  },1600);
+  setTimeout(function(){
+    S.payBusy=false;
+    closeSheets();
+    $("l-pro").classList.remove("open");
+    P.pro=true;
+    renderHome();renderProfile();renderRecipesFull();renderWeight();
+    if(S.cur)renderResult(false);
+    showToast("Pro активен. Пробный период — 7 дней");
+  },2500);
+}
+
+/* ═══════ туториал (авто-слайдшоу, показывается один раз) ═══════ */
+var TUT=[
+  {ic:"i-cam",title:"Фотографируйте тарелку",text:"Одно фото — и приложение само посчитает баланс."},
+  {ic:"i-plate",title:"Баланс сразу",text:"Оценка от 0 до 100 и мягкая рекомендация — без подсчёта калорий."},
+  {ic:"i-pencil",title:"Можно поправить",text:"Если что-то распозналось не так — измените вручную."},
+  {ic:"i-hist",title:"Прогресс за неделю",text:"История и графики показывают, как меняются привычки."},
+  {ic:"i-spark",title:"Идеи, что приготовить",text:"Когда чего-то не хватает — подскажем рецепт для баланса."}
+];
+var TS={active:false,i:0,timer:null};
+var TUT_STEP_MS=3400;
+function tutStartCheck(){
+  if(P.tutorialSeen)return;
+  setTimeout(startTutorial,600);
+}
+function startTutorial(){
+  try{
+    TS.active=true;TS.i=0;
+    $("tut").classList.add("on");
+    var dots=$("tutDots"),dh="";
+    for(var i=0;i<TUT.length;i++)dh+='<span'+(i===0?' class="on"':'')+'></span>';
+    dots.innerHTML=dh;
+    var prog=$("tutProg"),ph="";
+    for(var j=0;j<TUT.length;j++)ph+='<i><b></b></i>';
+    prog.innerHTML=ph;
+    renderTutSlide();
+  }catch(e){
+    TS.active=false;
+    $("tut").classList.remove("on");
+  }
+}
+function renderTutSlide(){
+  var st=TUT[TS.i];
+  var icoEl=$("tutIcon"),ttlEl=$("tutTitle"),txtEl=$("tutText");
+  var els=[icoEl,ttlEl,txtEl];
+  for(var e=0;e<els.length;e++)els[e].classList.add("tutswap");
+  setTimeout(function(){
+    icoEl.innerHTML=icon(st.ic,32);
+    ttlEl.textContent=st.title;
+    txtEl.textContent=st.text;
+    for(var e2=0;e2<els.length;e2++)els[e2].classList.remove("tutswap");
+  },160);
+  var dots=$("tutDots").children;
+  for(var i=0;i<dots.length;i++)dots[i].classList.toggle("on",i===TS.i);
+  var bars=$("tutProg").children;
+  for(var j=0;j<bars.length;j++){
+    bars[j].classList.remove("done","play");
+    if(j<TS.i)bars[j].classList.add("done");
+    else if(j===TS.i)bars[j].classList.add("play");
+  }
+  clearTimeout(TS.timer);
+  TS.timer=setTimeout(advanceTut,TUT_STEP_MS);
+}
+function advanceTut(){
+  if(!TS.active)return;
+  if(TS.i>=TUT.length-1){endTutorial();return;}
+  TS.i++;
+  renderTutSlide();
+}
+function endTutorial(){
+  TS.active=false;
+  clearTimeout(TS.timer);
+  P.tutorialSeen=true;
+  $("tut").classList.remove("on");
+}
+
+/* ═══════ misc ═══════ */
+function tick(){var el=$("clock");if(!el)return;var d=new Date();
+  el.textContent=d.getHours()+":"+("0"+d.getMinutes()).slice(-2)}
+tick();setInterval(tick,15000);
+(function(){
+  var days=["Воскресенье","Понедельник","Вторник","Среда","Четверг","Пятница","Суббота"];
+  var months=["января","февраля","марта","апреля","мая","июня","июля","августа","сентября","октября","ноября","декабря"];
+  var d=new Date();
+  $("homeDate").textContent=days[d.getDay()]+", "+d.getDate()+" "+months[d.getMonth()];
+})();
+var toastT;
+function showToast(m,withUndo){
+  $("toastMsg").textContent=m;
+  $("toastAct").style.display=withUndo?"":"none";
+  $("toast").classList.toggle("action",!!withUndo);
+  $("toast").classList.add("on");
+  clearTimeout(toastT);
+  toastT=setTimeout(hideToast,withUndo?4200:2200);
+}
+function hideToast(){$("toast").classList.remove("on");$("toast").classList.remove("action")}
+function setTab(btn){
+  var tabs=document.querySelectorAll(".tabbar .tab");
+  for(var i=0;i<tabs.length;i++)tabs[i].classList.remove("on");
+  btn.classList.add("on");
+  var v=btn.getAttribute("data-v");
+  ["home","history","recipes","profile"].forEach(function(vv){
+    $("av-"+vv).classList.toggle("active",v===vv);
+  });
+  if(v==="recipes")renderRecipesFull();
+  if(v==="history")positionHistThumb(false);
+}
+
+/* ═══════ делегированные клики ═══════ */
+document.addEventListener("click",function(e){
+  var el=e.target;
+  if(el&&el.closest)el=el.closest("[data-act]");
+  else{while(el&&(!el.getAttribute||!el.getAttribute("data-act")))el=el.parentNode;}
+  if(!el)return;
+  var a=el.getAttribute("data-act");
+
+  /* туториал: тап по карточке — сразу следующий слайд, «Пропустить» — закрыть насовсем */
+  if(TS.active){
+    try{
+      if(a==="tutskip"){endTutorial();return;}
+      if(a==="tuttap"){advanceTut();return;}
+    }catch(tutErr){
+      TS.active=false;
+      clearTimeout(TS.timer);
+      $("tut").classList.remove("on");
+    }
+  }
+
+  if(a==="obopt")obPick(parseInt(el.getAttribute("data-i"),10)||0);
+  else if(a==="obnext")obNext();
+  else if(a==="obback")obBack();
+  else if(a==="login"){showToast("Вход выполнен");showScreen("s-onb");renderOnb()}
+  else if(a==="sex"){
+    P.profile.sex=el.getAttribute("data-s");
+    var segbtns=$("sexSeg").querySelectorAll(".segb");
+    segbtns[0].classList.toggle("sel",P.profile.sex==="m");
+    segbtns[1].classList.toggle("sel",P.profile.sex==="f");
+    positionSexThumb(true);
+    $("s-onb").classList.toggle("gender-f",P.profile.sex==="f");
+    if(navigator.vibrate)try{navigator.vibrate(10)}catch(e){}
+  }
+  else if(a==="inc"||a==="dec"){
+    var k=el.getAttribute("data-k"),dir=a==="inc"?1:-1;
+    var lim={age:[14,90],height:[130,220],weight:[35,220],targetLoss:[1,40]}[k];
+    var nv=Math.min(lim[1],Math.max(lim[0],P.profile[k]+dir));
+    if(nv!==P.profile[k]){
+      P.profile[k]=nv;
+      rollNumber(k,nv,dir);
+      var fr=el.closest?el.closest(".frow"):null;
+      if(fr){fr.classList.add("bump");setTimeout(function(){fr.classList.remove("bump")},220);}
+      if(navigator.vibrate)try{navigator.vibrate(8)}catch(e){}
+    }
+  }
+  else if(a==="tab")setTab(el);
+  else if(a==="opencam")openCam();
+  else if(a==="closecam"){stopCamStream();$("l-camera").classList.remove("open")}
+  else if(a==="shutter")shutter();
+  else if(a==="closeres")$("l-result").classList.remove("open");
+  else if(a==="retake")retakePhoto();
+  else if(a==="pdec")editProd(parseInt(el.getAttribute("data-j"),10)||0,-25);
+  else if(a==="pinc")editProd(parseInt(el.getAttribute("data-j"),10)||0,25);
+  else if(a==="pdel")delProd(parseInt(el.getAttribute("data-j"),10)||0);
+  else if(a==="padd")addProd(parseInt(el.getAttribute("data-m"),10)||0);
+  else if(a==="addsuggest")addSuggested(el.getAttribute("data-cat"),parseInt(el.getAttribute("data-si"),10)||0);
+  else if(a==="savemeal")saveMeal();
+  else if(a==="undosave")undoSave();
+  else if(a==="htab")setHTab(el.getAttribute("data-h"));
+  else if(a==="daybar")showDayDetail(parseInt(el.getAttribute("data-idx"),10)||0);
+  else if(a==="hopen")openEntry(parseInt(el.getAttribute("data-i"),10)||0);
+  else if(a==="range")pickRange(el.getAttribute("data-r"));
+  else if(a==="openrecipes")setTab(document.querySelector('.tab[data-v="recipes"]'));
+  else if(a==="rfilter")setRecipeFilter(el.getAttribute("data-f"));
+  else if(a==="recipeinfo")showRecipeInfo(el.getAttribute("data-cat"),parseInt(el.getAttribute("data-idx"),10)||0);
+  else if(a==="closerecipe")$("l-recipe").classList.remove("open");
+  else if(a==="addweight")openAddWeight();
+  else if(a==="openforecast"){
+    if(!P.pro){
+      $("proReason").textContent="Прогноз веса на основе тренда — в Pro.";
+      $("l-pro").classList.add("open");
+    }
+  }
+  else if(a==="editw")openEditWeight(el.getAttribute("data-date"));
+  else if(a==="winc")wstep(1);
+  else if(a==="wdec")wstep(-1);
+  else if(a==="savew")saveWeight();
+  else if(a==="delw")deleteWeight();
+  else if(a==="editdata")openDataSheet();
+  else if(a==="egoal"){
+    S.edit.goal=parseInt(el.getAttribute("data-i"),10)||0;
+    var gbtns=$("egoalSeg").querySelectorAll(".segb");
+    for(var gi=0;gi<gbtns.length;gi++)gbtns[gi].classList.toggle("sel",gi===S.edit.goal);
+    positionEgoalThumb(true);
+  }
+  else if(a==="einc"||a==="edec"){
+    var ek=el.getAttribute("data-k"),edir=a==="einc"?1:-1;
+    var elim={height:[130,220],weight:[35,220]}[ek];
+    var env=Math.min(elim[1],Math.max(elim[0],S.edit[ek]+edir));
+    if(env!==S.edit[ek]){
+      S.edit[ek]=env;
+      var host=$("esv-"+ek);
+      if(host){
+        var wrap=host.querySelector(".rollwrap");
+        var stale=wrap.querySelectorAll(".roll.up-out,.roll.down-out");
+        for(var st=0;st<stale.length;st++)if(stale[st].parentNode)stale[st].parentNode.removeChild(stale[st]);
+        var old=wrap.querySelector(".roll");
+        var next=document.createElement("span");
+        next.className="roll "+(edir>0?"up-in":"down-in");
+        next.textContent=env;
+        wrap.appendChild(next);
+        void next.offsetWidth;
+        if(old)old.classList.add(edir>0?"up-out":"down-out");
+        next.classList.remove("up-in","down-in");
+        (function(o){setTimeout(function(){if(o&&o.parentNode)o.parentNode.removeChild(o)},280)})(old);
+      }
+      var efr=el.closest?el.closest(".frow"):null;
+      if(efr){efr.classList.add("bump");setTimeout(function(){efr.classList.remove("bump")},220);}
+      if(navigator.vibrate)try{navigator.vibrate(8)}catch(e){}
+    }
+  }
+  else if(a==="savedata")saveData();
+  else if(a==="notif"){
+    el.classList.toggle("on");
+    $("notifTimes").classList.toggle("show",el.classList.contains("on"));
+  }
+  else if(a==="ntime"){
+    if(!P.pro){
+      $("proReason").textContent="Гибкая настройка времени напоминаний — в Pro. На бесплатном плане действуют времена по умолчанию.";
+      $("l-pro").classList.add("open");
+      return;
+    }
+    el.classList.toggle("sel");
+    var t=el.getAttribute("data-t"),ix=P.notifTimes.indexOf(t);
+    if(ix>=0)P.notifTimes.splice(ix,1);else P.notifTimes.push(t);
+    showToast(el.classList.contains("sel")?"Напоминание в "+t+" включено":"Напоминание в "+t+" выключено");
+  }
+  else if(a==="toggle")el.classList.toggle("on");
+  else if(a==="theme"){
+    el.classList.toggle("on");
+    P.theme=el.classList.contains("on")?"dark":"light";
+    scr.classList.toggle("dark",P.theme==="dark");
+    $("themeIcon").innerHTML='<use href="#'+(P.theme==="dark"?"i-sun":"i-moon")+'"/>';
+  }
+  else if(a==="export")exportHist();
+  else if(a==="openpro"){$("proReason").textContent="Спокойное сравнение — без таймеров и мигающих скидок.";$("l-pro").classList.add("open")}
+  else if(a==="closepro")$("l-pro").classList.remove("open");
+  else if(a==="plan")pickPlan(el.getAttribute("data-p"));
+  else if(a==="trypro")tryPro();
+  else if(a==="closesheet")closeSheets();
+  else if(a==="confirmpay")confirmPay();
+},false);
+
+renderOnb();
+
+/* тестовый хук */
+window.__TARELKA_TEST__={P:P,S:S,TS:TS,TUT:TUT,shares:shares,score:score,scoreLabel:scoreLabel,
+  recommend:recommend,calcNorm:calcNorm,kcalEstimate:kcalEstimate,mealType:mealType,
+  findGapCategory:findGapCategory,avgShares:avgShares,RECIPES:RECIPES,suggestAdditions:suggestAdditions,
+  weightTrend:weightTrend,seedWeights:seedWeights,isoDate:isoDate,calcBMI:calcBMI,bmiLabel:bmiLabel,forecastWeight:forecastWeight,macroEstimate:macroEstimate,
+  GEMINI_API_KEY:GEMINI_API_KEY,GEMINI_MODEL:GEMINI_MODEL,capturePhotoBase64:capturePhotoBase64,analyzeWithGemini:analyzeWithGemini,microEstimate:microEstimate,
+  weekAvg:weekAvg,TARGETS:TARGETS,SCENARIOS:SCENARIOS,KCAL100:KCAL100};
+})();
+</script>
+<script>
+if("serviceWorker" in navigator){
+  window.addEventListener("load",function(){
+    navigator.serviceWorker.register("service-worker.js").catch(function(){});
+  });
+}
+</script>
+</body>
+</html>
